@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="7dp"
+    android:background="@drawable/background_for_songs">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_item_song_name"
+        android:singleLine="true"
+        android:textSize="21dp"
+        android:textColor="@color/text_color"/>
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:id="@+id/iv_item_song_rating"
+        android:textColor="@color/edit_text_white_color"/>
+</LinearLayout>

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.androidcollider.koljadnik.TextActivity">
+    <item android:id="@+id/share_song"
+        android:title="@string/action_settings"
+        android:showAsAction="always"
+        android:icon="@drawable/share"/>
+    <item android:id="@+id/sms_song"
+        android:title="@string/action_settings"
+        android:showAsAction="always"
+        android:icon="@drawable/sms"/>
+</menu>

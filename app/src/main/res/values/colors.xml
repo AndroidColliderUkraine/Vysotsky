@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_color">#ff27250a</color>
+    <color name="element_color">#fffdfdcc</color>
+    <color name="text_color">#ff000000</color>
+    <color name="action_bar_color">#ff867429</color>
+    <color name="edit_text_white_color">#ffffffff</color>
+    <color name="christmas_tree_color">#ff158705</color>
+    <color name="splash_screen_bg_color">#ff000000</color>
+    <color name="splash_screen_site_color">#ff0e008e</color>
+</resources>
