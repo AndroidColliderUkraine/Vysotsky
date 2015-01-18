@@ -23,15 +23,17 @@ public class SQLQueriesLocalDB {
             "id_comment       INTEGER PRIMARY KEY NOT NULL," +
             "id_song          INTEGER NOT NULL," +
             "Text             TEXT NOT NULL," +
-            "DatePosted      INTEGER NOT NULL," +
+            "UserName         TEXT NOT NULL," +
+            "DatePosted       TEXT NOT NULL," +
             "Date             INTEGER NOT NULL" +
             ");";
     //make a string SQL request for LocalComment table
     public static final String create_local_comment_table = "CREATE TABLE LocalComment (" +
-            "id_comment       INTEGER PRIMARY KEY NOT NULL," +
+            "id               INTEGER PRIMARY KEY AUTOINCREMENT," +
             "id_song          INTEGER NOT NULL," +
             "Text             TEXT NOT NULL," +
-            "DatePosted     INTEGER NOT NULL" +
+            "UserName         TEXT NOT NULL," +
+            "DatePosted       INTEGER NOT NULL" +
             ");";
 
     //make a string SQL request for Dropping all tables from ver 1

@@ -86,9 +86,9 @@ public class SongListActivity extends Activity {
 
                 songAdapter.halfUpdateData(songList);
 
-                /*Intent intent = new Intent(SongListActivity.this,TextActivity.class);
+                Intent intent = new Intent(SongListActivity.this,TextActivity.class);
                 intent.putExtra("Song", songAdapter.getItem(position));
-                startActivity(intent);*/
+                startActivity(intent);
             }
         });
 

@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.androidcollider.vysotsky.database.local_db.DBhelperLocalDB;
+import com.androidcollider.vysotsky.objects.Comment;
 import com.androidcollider.vysotsky.objects.Song;
 import com.androidcollider.vysotsky.objects.SongForUpdateRating;
 import com.androidcollider.vysotsky.utils.NumberConverter;
@@ -17,6 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by pseverin on 22.12.14.
@@ -33,7 +36,7 @@ public class DataSource {
     private SharedPreferences sharedPreferences;
     private final static String APP_PREFERENCES = "VysotskyPref";
 
-    private final static String[] tableNames = new String[]{"Song","Comment"};
+    private final static String[] tableNames = new String[]{"Song", "Comment"};
 
 
     public DataSource(Context context) {
@@ -73,8 +76,9 @@ public class DataSource {
             try {
                 int idSongServer = jsonObject.getInt("id");
                 updateTime = NumberConverter.dateToLongConverter(jsonObject.getString("Date"));
-                int showTo = jsonObject.getInt("ShowTo");;
-                if (showTo==1){
+                int showTo = jsonObject.getInt("ShowTo");
+                long count = 0;
+                if (showTo == 1) {
                     //Add data to table Song
                     ContentValues cv = new ContentValues();
                     cv.put("Date", updateTime);
@@ -87,16 +91,18 @@ public class DataSource {
                     cv.put("Rating", jsonObject.getLong("Rating"));
                     cv.put("LocalRating", 0);
                     cv.put("IsFavorite", 0);
-                    int updateCount = dbLocal.update(tableName, cv, "id_song = ?", new String[]{String.valueOf(idSongServer)});
-                    if (updateCount == 0) {
+                    count = dbLocal.update(tableName, cv, "id_song = ?", new String[]{String.valueOf(idSongServer)});
+                    if (count == 0) {
                         cv.put("id_song", idSongServer);
-                        long insertCount = dbLocal.insert("Song", null, cv);
+                        count = dbLocal.insert("Song", null, cv);
                     }
                     cv.clear();
                 } else {
-                    int delCount = dbLocal.delete(tableName, "id_song = ?", new String[]{String.valueOf(idSongServer)});
+                    count = dbLocal.delete(tableName, "id_song = ?", new String[]{String.valueOf(idSongServer)});
                 }
-                setLocalUpdateDates(tableName, updateTime);
+                if (count > 0) {
+                    setLocalUpdateDates(tableName, updateTime);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -107,23 +113,27 @@ public class DataSource {
             try {
                 int idCommentServer = jsonObject.getInt("id");
                 updateTime = NumberConverter.dateToLongConverter(jsonObject.getString("Date"));
-                int showTo = jsonObject.getInt("ShowTo");;
-                if (showTo==1){
+                int showTo = jsonObject.getInt("ShowTo");
+                long count = 0;
+                if (showTo == 1) {
                     ContentValues cv = new ContentValues();
                     cv.put("Date", updateTime);
                     cv.put("id_song", jsonObject.getInt("id_Song"));
                     cv.put("Text", jsonObject.getString("Text"));
-                    cv.put("DatePosted", jsonObject.getLong("DatePosted"));
-                    int updateCount = dbLocal.update(tableName, cv, "id_comment = ?", new String[]{String.valueOf(idCommentServer)});
-                    if (updateCount == 0) {
+                    cv.put("UserName", jsonObject.getString("UserName"));
+                    cv.put("DatePosted", jsonObject.getString("DatePosted"));
+                    count = dbLocal.update(tableName, cv, "id_comment = ?", new String[]{String.valueOf(idCommentServer)});
+                    if (count == 0) {
                         cv.put("id_comment", idCommentServer);
-                        long insertCount = dbLocal.insert(tableName, null, cv);
+                        count = dbLocal.insert(tableName, null, cv);
                     }
                     cv.clear();
                 } else {
-                    int delCount = dbLocal.delete(tableName, "id_comment = ?", new String[]{String.valueOf(idCommentServer)});
+                    count = dbLocal.delete(tableName, "id_comment = ?", new String[]{String.valueOf(idCommentServer)});
                 }
-                setLocalUpdateDates(tableName, updateTime);
+                if (count > 0) {
+                    setLocalUpdateDates(tableName, updateTime);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -152,9 +162,9 @@ public class DataSource {
                 String songName = cursor.getString(nameColIndex);
                 int songId = cursor.getInt(idColIndex);
                 int songYear = cursor.getInt(yearColIndex);
-                boolean isFavorite = cursor.getInt(isFavoriteColIndex)!=0;
+                boolean isFavorite = cursor.getInt(isFavoriteColIndex) != 0;
                 long songRating = cursor.getLong(ratingColIndex) + cursor.getLong(localRatingColIndex);
-                songsList.add(new Song(songId,songName, songRating, songYear, isFavorite));
+                songsList.add(new Song(songId, songName, songRating, songYear, isFavorite));
 
                 if (songRating > maxRating) {
                     maxRating = songRating;
@@ -173,20 +183,17 @@ public class DataSource {
     }
 
 
-
-
-
     public void addPointToLocalRating(int idSong) {
         openLocal();
         Cursor cursor = dbLocal.query("Song", null, "id_song = ?", new String[]{String.valueOf(idSong)}, null, null, null);
         long myLocalRating = 0;
         if (cursor.moveToFirst()) {
-            int localRatingColIndex = cursor.getColumnIndex("my_local_rating");
+            int localRatingColIndex = cursor.getColumnIndex("LocalRating");
             myLocalRating = cursor.getLong(localRatingColIndex);
         }
 
         ContentValues cv = new ContentValues();
-        cv.put("my_local_rating", myLocalRating + 1);
+        cv.put("LocalRating", myLocalRating + 1);
         dbLocal.update("Song", cv, "id_song = ?", new String[]{String.valueOf(idSong)});
         closeLocal();
     }
@@ -223,35 +230,64 @@ public class DataSource {
         //ArrayList<Song> songsList = new ArrayList<>();
         //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
         if (cursor.moveToFirst()) {
-            int dataColIndex = cursor.getColumnIndex("data");
-            //int remarksColIndex = cursor.getColumnIndex("remarks");
-            int sourceColIndex = cursor.getColumnIndex("source");
-            int idSongColumnIndex = cursor.getColumnIndex("id_song");
+            int textColIndex = cursor.getColumnIndex("Text");
+            int aboutColIndex = cursor.getColumnIndex("About");
+            int chordColIndex = cursor.getColumnIndex("Chord");
+            int videoLinkColIndex = cursor.getColumnIndex("VideoLink");
 
-            int idSong = cursor.getInt(idSongColumnIndex);
+            String text = cursor.getString(textColIndex);
+            String chord = cursor.getString(chordColIndex);
+            String about = cursor.getString(aboutColIndex);
+            String videoLink = cursor.getString(videoLinkColIndex);
 
-            String text = cursor.getString(dataColIndex);
-            //String remarks = cursor.getString(remarksColIndex);
-            String source = cursor.getString(sourceColIndex);
             song.setText(text);
-            //song.setRemarks(remarks);
-            //song.setSource(source);
+            song.setChord(chord);
+            song.setAbout(about);
+            song.setVideoLink(videoLink);
         }
         cursor.close();
-        /*cursor = dbLocal.query("CarolComment", null, "id_text = ?", new String[]{String.valueOf(song.getId())}, null, null, null);
 
-        ArrayList<String> commentList = new ArrayList<>();
-        //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
+        ArrayList<Comment> commentList = new ArrayList<>();
+        cursor = dbLocal.query("Comment", null, "id_song = ?", new String[]{String.valueOf(song.getId())}, null, null, null);
         if (cursor.moveToFirst()) {
-            int commentDataColIndex = cursor.getColumnIndex("data");
+            int textColIndex = cursor.getColumnIndex("Text");
+            int userNameColIndex = cursor.getColumnIndex("UserName");
+            int datePostedColIndex = cursor.getColumnIndex("DatePosted");
 
             for (int i = 0; i < cursor.getCount(); i++) {
-                commentList.add(cursor.getString(commentDataColIndex));
+                commentList.add(new Comment(0, song.getId(), cursor.getString(userNameColIndex),
+                        cursor.getString(textColIndex), cursor.getString(datePostedColIndex)));
+                cursor.moveToNext();
             }
-            song.setComments(commentList);
+
         }
         cursor.close();
-        closeLocal();*/
+
+        cursor = dbLocal.query("LocalComment", null, "id_song = ?", new String[]{String.valueOf(song.getId())}, null, null, null);
+        if (cursor.moveToFirst()) {
+            int textColIndex = cursor.getColumnIndex("Text");
+            int userNameColIndex = cursor.getColumnIndex("UserName");
+            int datePostedColIndex = cursor.getColumnIndex("DatePosted");
+
+            for (int i = 0; i < cursor.getCount(); i++) {
+                commentList.add(new Comment(0, song.getId(), cursor.getString(textColIndex),
+                        cursor.getString(userNameColIndex), cursor.getString(datePostedColIndex)));
+                cursor.moveToNext();
+            }
+
+        }
+        cursor.close();
+
+        Collections.sort(commentList, new Comparator<Comment>() {
+            @Override
+            public int compare(Comment comment1, Comment comment2) {
+
+                return new Long(comment1.getDatePosted()).compareTo(new Long(comment2.getDatePosted()));
+            }
+        });
+
+        song.setComments(commentList);
+        closeLocal();
         return song;
     }
 
@@ -287,7 +323,6 @@ public class DataSource {
         return sharedPreferences.getBoolean("wasStarted", false);
     }
 
-
     public Cursor getUpdatebleRowsFromLocal(String tableName, long updateFrom) {
         openLocal();
         Cursor cursor = dbLocal.query(tableName, null, "update_time > ?", new String[]{String.valueOf(updateFrom)}, null, null, null);
@@ -295,5 +330,40 @@ public class DataSource {
         return cursor;
     }
 
+    public void addCommentToLocal(Comment comment) {
+        openLocal();
+        //Add data to table Comment
 
+        ContentValues cv = new ContentValues();
+        cv.put("id_song", comment.getIdSong());
+        cv.put("Text", comment.getText());
+        cv.put("UserName", comment.getUserName());
+        cv.put("DatePosted", comment.getDatePosted());
+        dbLocal.insert("LocalComment", null, cv);
+        cv.clear();
+
+        closeLocal();
+    }
+
+    public ArrayList<Comment> getLocalComments(){
+        ArrayList<Comment> comments = new ArrayList<>();
+        Cursor cursor = dbLocal.query("LocalComment", null, null, null, null, null, null);
+        //ArrayList<Song> songsList = new ArrayList<>();
+        //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
+        if (cursor.moveToFirst()) {
+            int textColIndex = cursor.getColumnIndex("Text");
+            int userNameColIndex = cursor.getColumnIndex("UserName");
+            int datePostedColIndex = cursor.getColumnIndex("DatePosted");
+            int songIdColIndex = cursor.getColumnIndex("id_song");
+
+            for (int i = 0; i < cursor.getCount(); i++) {
+                comments.add(new Comment(0, cursor.getInt(songIdColIndex), cursor.getString(textColIndex),
+                        cursor.getString(userNameColIndex), cursor.getString(datePostedColIndex)));
+                cursor.moveToNext();
+            }
+
+        }
+        cursor.close();
+        return comments;
+    }
 }

@@ -11,6 +11,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.androidcollider.vysotsky.R;
 import com.androidcollider.vysotsky.SongListActivity;
 import com.androidcollider.vysotsky.SplashScreenActivity;
+import com.androidcollider.vysotsky.objects.Comment;
 import com.androidcollider.vysotsky.objects.SongForUpdateRating;
 import com.androidcollider.vysotsky.utils.AppController;
 import com.androidcollider.vysotsky.utils.NumberConverter;
@@ -55,15 +56,7 @@ public class DBupdater {
 
 
     public void checkAndUpdateTables() {
-        /*localUpdateDates = new ArrayList<>();
-        serverUpdateDates = new ArrayList<>();
-        localUpdateDates.clear();
-        serverUpdateDates.clear();
-
-        localUpdateDates = dataSource.getLocalUpdates();*/
         updateServerRatings();
-        //getServerUpdateDates();
-
     }
 
     public void updateServerRatings() {
@@ -75,24 +68,25 @@ public class DBupdater {
         if (songListForUpdateRatings.size()!=0){
             updateServerRatingsReq(songListForUpdateRatings);
         } else {
-            getServerUpdateDatesReq();
+            updateServerComments();
         }
     }
 
+
     private void updateServerRatingsReq(final ArrayList<SongForUpdateRating> songListForUpdateRatings){
-        String url = AppController.BASE_URL_KEY + "update_song_rating_mass.php";
+        String url = AppController.BASE_URL_KEY + "update_song_rating_mas.php";
 
         StringRequest strReq = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                       /* Log.d("RESPONSE ratings", "     " + response);
-                        alreadyUpdRatings++;
+                        Log.d("RESPONSE ratings", "     " + response);
+                        /*  alreadyUpdRatings++;
                         if (alreadyUpdRatings == needToUpdRatings) {
                             alreadyUpdRatings = 0;
                             needToUpdRatings = 0;
                         }*/
-                            getServerUpdateDatesReq();
+                        updateServerComments();
 
                     }
 
@@ -130,7 +124,28 @@ public class DBupdater {
         AppController.getInstance().addToRequestQueue(strReq, "update_ratings");
     }
 
-    public void getServerUpdateDatesReq() {
+    private void updateServerComments() {
+        if (mode.equals("start")) {
+            ((SplashScreenActivity) context).setLoadingStatus("Загрузка коментарие");
+        }
+        ArrayList<Comment> commentListForServerUpdate = dataSource.getLocalComments();
+
+        if (commentListForServerUpdate.size()!=0){
+            for (Comment comment: commentListForServerUpdate){
+                updateServerCommentReq(comment);
+            }
+        } else {
+            getServerUpdateDatesReq();
+        }
+    }
+
+
+    private void updateServerCommentReq(final Comment comment){
+
+    }
+
+
+    private void getServerUpdateDatesReq() {
         String url = AppController.BASE_URL_KEY + "get_last_updates.php";
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 url, new Response.Listener<String>() {

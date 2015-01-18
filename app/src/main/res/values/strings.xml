@@ -6,8 +6,11 @@
 
     <!-- labels -->
     <string name="splash_title">Колядник</string>
-    <string name="android_collider_company">Android Collider © 2015</string>
-    <string name="dzerela">Джерела</string>
+    <string name="android_collider_company">Android Colli--+der © 2015</string>
+    <string name="commentarii">Комментарии</string>
+    <string name="comment_button">Добавить</string>
+    <string name="name_hint">Ваше имя</string>
+    <string name="comment_hint">Оставьте, пожайлуйста, свой комментарий..</string>
     <string name="nadislaty_rozrobniku">Надіслати Розробнику</string>
     <string name="pishit_sudi">Пишіть сюди...</string>
 
@@ -22,5 +25,7 @@
     <string name="title_activity_text">TextActivity</string>
 
     <string name="crash_toast_text">Oooops, crash!</string>
+
+    <string name="succesfull_comm_add_message">Комментарий добавлен</string>
 
 </resources>

@@ -22,11 +22,11 @@ public class Song implements Parcelable{
     private String about;
     private String videoLink;
     private long rating;
-    private ArrayList<String> comments;
+    private ArrayList<Comment> comments;
     private boolean isFavorite;
 
     public Song(int id, String name, String text, String chord, int year,
-                String about, String videoLink, long rating, ArrayList<String> comments,
+                String about, String videoLink, long rating, ArrayList<Comment> comments,
                 boolean isFavorite) {
         this.id = id;
         this.name = name;
@@ -85,9 +85,12 @@ public class Song implements Parcelable{
         return rating;
     }
 
-    public ArrayList<String> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
+
+
+
 
     public void setId(int id) {
         this.id = id;
@@ -121,8 +124,12 @@ public class Song implements Parcelable{
         this.rating = rating;
     }
 
-    public void setComments(ArrayList<String> comments) {
+    public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    public void setFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 
     public Song(Parcel in){
@@ -135,7 +142,10 @@ public class Song implements Parcelable{
         this.videoLink = in.readString();
         this.rating = in.readLong();
         if (this.comments!=null){
-            in.readStringList(this.comments);
+            Comment[] commentsArray = (Comment[])in.readParcelableArray(null);
+            for (int i=0; i<commentsArray.length;i++){
+                this.comments.add(commentsArray[i]);
+            }
         }
         this.isFavorite = in.readByte() != 0;
     }
@@ -155,7 +165,10 @@ public class Song implements Parcelable{
         dest.writeString(this.about);
         dest.writeString(this.videoLink);
         dest.writeLong(this.rating);
-        dest.writeStringList(this.comments);
+        if (this.comments!=null){
+            Comment[]commentsArray = this.comments.toArray(new Comment[comments.size()]);
+            dest.writeParcelableArray(commentsArray,0);
+        }
         dest.writeByte((byte) (this.isFavorite ? 1 : 0));
     }
 
