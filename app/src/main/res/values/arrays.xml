@@ -7,4 +7,12 @@
         <item>Написати скаргу або зауваження</item>
         <item>Інше</item>
     </string-array>
+
+    <string-array
+        name="drawer_array">
+        <item>Список песен</item>
+        <item>Любимые песни</item>
+        <item>Фотоматериалы</item>
+        <item>Настройки</item>
+    </string-array>
 </resources>

@@ -40,7 +40,7 @@ public class DBupdater {
 
     private final static String[] tableNames = new String[]{"Song","Comment"};
 
-    //private int needToUpdTables = 0;
+    private long commentUpdCount = 0;
 
     /*private int alreadyUpdRatings = 0;
     private int needToUpdRatings = 0;*/
@@ -59,6 +59,7 @@ public class DBupdater {
         updateServerRatings();
     }
 
+    // Ratings
     public void updateServerRatings() {
         if (mode.equals("start")) {
             ((SplashScreenActivity) context).setLoadingStatus("Завантаження рейтингів");
@@ -71,7 +72,6 @@ public class DBupdater {
             updateServerComments();
         }
     }
-
 
     private void updateServerRatingsReq(final ArrayList<SongForUpdateRating> songListForUpdateRatings){
         String url = AppController.BASE_URL_KEY + "update_song_rating_mas.php";
@@ -124,6 +124,7 @@ public class DBupdater {
         AppController.getInstance().addToRequestQueue(strReq, "update_ratings");
     }
 
+    //Comments
     private void updateServerComments() {
         if (mode.equals("start")) {
             ((SplashScreenActivity) context).setLoadingStatus("Загрузка коментарие");
@@ -132,20 +133,66 @@ public class DBupdater {
 
         if (commentListForServerUpdate.size()!=0){
             for (Comment comment: commentListForServerUpdate){
-                updateServerCommentReq(comment);
+                updateServerCommentReq(comment, commentListForServerUpdate.size());
             }
         } else {
-            getServerUpdateDatesReq();
+            getServerUpdateDatasReq();
         }
     }
 
+    private void updateServerCommentReq(final Comment comment, final long needToUpdate){
+        String url = AppController.BASE_URL_KEY + "add_comment.php";
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("RESPONSE comments", response);
+                try {
+                    JSONObject res = new JSONObject(response);
+                    if (res.getString("status").equals("True")){
+                        dataSource.deleteCommentFromLocalComments(comment.getIdComment());
+                    }
+                    commentUpdCount++;
+                    if (commentUpdCount==needToUpdate){
+                        commentUpdCount = 0;
+                        getServerUpdateDatasReq();
+                    }
+                }
+                catch (JSONException e){
+                    e.printStackTrace();
+                }
 
-    private void updateServerCommentReq(final Comment comment){
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.i(TAG + " error", volleyError.toString());
 
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("action", "add_comment");
+                params.put("user_name", comment.getUserName());
+                params.put("text", comment.getText());
+                params.put("id_song", String.valueOf(comment.getIdSong()));
+                params.put("date_posted", comment.getDatePosted());
+                return params;
+            }
+        };
+        // Adding request to request queue
+        /*strReq.setRetryPolicy(new DefaultRetryPolicy(
+                MY_SOCKET_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+
+        AppController.getInstance().addToRequestQueue(strReq, "comments to server");
     }
 
 
-    private void getServerUpdateDatesReq() {
+    private void getServerUpdateDatasReq() {
         String url = AppController.BASE_URL_KEY + "get_last_updates.php";
         StringRequest strReq = new StringRequest(Request.Method.POST,
                 url, new Response.Listener<String>() {

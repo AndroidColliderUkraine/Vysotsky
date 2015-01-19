@@ -282,7 +282,8 @@ public class DataSource {
             @Override
             public int compare(Comment comment1, Comment comment2) {
 
-                return new Long(comment1.getDatePosted()).compareTo(new Long(comment2.getDatePosted()));
+                return new Long(NumberConverter.dateToLongConverter(comment1.getDatePosted())).compareTo
+                        (new Long(NumberConverter.dateToLongConverter(comment2.getDatePosted())));
             }
         });
 
@@ -347,6 +348,7 @@ public class DataSource {
 
     public ArrayList<Comment> getLocalComments(){
         ArrayList<Comment> comments = new ArrayList<>();
+        openLocal();
         Cursor cursor = dbLocal.query("LocalComment", null, null, null, null, null, null);
         //ArrayList<Song> songsList = new ArrayList<>();
         //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
@@ -355,15 +357,22 @@ public class DataSource {
             int userNameColIndex = cursor.getColumnIndex("UserName");
             int datePostedColIndex = cursor.getColumnIndex("DatePosted");
             int songIdColIndex = cursor.getColumnIndex("id_song");
+            int idCommentColIndex = cursor.getColumnIndex("id");
 
             for (int i = 0; i < cursor.getCount(); i++) {
-                comments.add(new Comment(0, cursor.getInt(songIdColIndex), cursor.getString(textColIndex),
-                        cursor.getString(userNameColIndex), cursor.getString(datePostedColIndex)));
+                comments.add(new Comment(cursor.getInt(idCommentColIndex), cursor.getInt(songIdColIndex),
+                        cursor.getString(userNameColIndex), cursor.getString(textColIndex), cursor.getString(datePostedColIndex)));
                 cursor.moveToNext();
             }
-
         }
         cursor.close();
+        openLocal();
         return comments;
+    }
+
+    public void deleteCommentFromLocalComments(int idComment){
+        openLocal();
+        dbLocal.delete("LocalComment", "id = ?", new String[]{String.valueOf(idComment)});
+        closeLocal();
     }
 }

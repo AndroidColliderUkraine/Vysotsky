@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.androidcollider.vysotsky.adapters.SongAdapter;
 import com.androidcollider.vysotsky.database.DataSource;
+import com.androidcollider.vysotsky.listeners.DrawerItemClickListener;
 import com.androidcollider.vysotsky.objects.Song;
 
 import java.util.ArrayList;
@@ -44,6 +45,8 @@ public class SongListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+
+        drawerInit();
 
         sortTypeArrayList = new ArrayList<>();
         sortTypeArrayList.add("За алфавітом");
@@ -221,6 +224,17 @@ public class SongListActivity extends Activity {
             lv_sort_types.setVisibility(View.GONE);
         }
 
+    }
+
+    private void drawerInit(){
+        String[] drawerItems = getResources().getStringArray(R.array.drawer_array);
+        ListView drawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        drawerList.setAdapter(new ArrayAdapter<String>(this,
+                 R.layout.drawer_list_item, drawerItems));
+        // Set the list's click listener
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());
     }
 
 }
