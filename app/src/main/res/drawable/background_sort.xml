@@ -4,8 +4,6 @@
         <shape
             android:shape="rectangle">
             <solid android:color="@color/action_bar_color" />
-            <corners android:topLeftRadius="5dp"
-                android:bottomLeftRadius="5dp"/>
         </shape>
     </item>
 </layer-list>

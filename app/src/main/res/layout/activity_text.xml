@@ -28,7 +28,7 @@
         android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
         android:scrollbarStyle="insideInset"
-        android:id="@+id/scrollView">
+        android:id="@+id/text_scrollView">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
@@ -155,8 +155,8 @@
         android:src="@drawable/minus"
         android:id="@+id/iv_minus"
         android:layout_above="@+id/textView"
-        android:layout_alignRight="@+id/scrollView"
-        android:layout_alignEnd="@+id/scrollView"
+        android:layout_alignRight="@+id/text_scrollView"
+        android:layout_alignEnd="@+id/text_scrollView"
         android:alpha="0.9"
         android:adjustViewBounds="true" />
 
@@ -171,6 +171,53 @@
         android:layout_alignParentEnd="true"
         android:layout_marginRight="15dp"
         android:alpha="0.9" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/minus"
+        android:id="@+id/iv_down_acc"
+        android:alpha="0.9"
+        android:adjustViewBounds="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/plus"
+        android:id="@+id/iv_up_acc"
+        android:alpha="0.9"
+        android:layout_above="@+id/iv_down_acc"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:focusableInTouchMode="false" />
+
+
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/minus"
+        android:id="@+id/iv_down_scroll"
+        android:alpha="0.9"
+        android:adjustViewBounds="true"
+        android:layout_above="@+id/iv_up_acc"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="46dp" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/plus"
+        android:id="@+id/iv_up_scroll"
+        android:alpha="0.9"
+        android:focusableInTouchMode="false"
+        android:layout_above="@+id/iv_down_scroll"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="match_parent"

@@ -85,7 +85,12 @@ public class DataSource {
                     cv.put("Name", jsonObject.getString("Name"));
                     cv.put("Text", jsonObject.getString("Text"));
                     cv.put("Chord", jsonObject.getString("Chord"));
-                    cv.put("Year", jsonObject.getInt("Year"));
+                    String year = jsonObject.getString("Year");
+                    if (year.isEmpty()){
+                        cv.put("Year", 0);
+                    } else {
+                        cv.put("Year", Integer.valueOf(year));
+                    }
                     cv.put("About", jsonObject.getString("About"));
                     cv.put("VideoLink", jsonObject.getString("VideoLink"));
                     cv.put("Rating", jsonObject.getLong("Rating"));

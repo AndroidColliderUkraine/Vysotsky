@@ -6,7 +6,7 @@
 
     <!-- labels -->
     <string name="splash_title">Колядник</string>
-    <string name="android_collider_company">Android Colli--+der © 2015</string>
+    <string name="android_collider_company">Android Collider © 2015</string>
     <string name="commentarii">Комментарии</string>
     <string name="comment_button">Добавить</string>
     <string name="name_hint">Ваше имя</string>
