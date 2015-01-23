@@ -33,7 +33,7 @@ public class DataSource {
     private DBhelperLocalDB dbHelperLocal;
     private SQLiteDatabase dbLocal;
     private Context context;
-    private SharedPref sPref;
+    private SharedPreferences sharedPreferences;
     private final static String APP_PREFERENCES = "VysotskyPref";
 
     private final static String[] tableNames = new String[]{"Song", "Comment"};

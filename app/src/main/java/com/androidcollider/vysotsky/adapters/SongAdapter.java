@@ -1,6 +1,7 @@
 package com.androidcollider.vysotsky.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +87,8 @@ public class SongAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.tv_name = (TextView) view.findViewById(R.id.tv_item_song_name);
             holder.iv_rating= (ImageView) view.findViewById(R.id.iv_item_song_rating);
+            Typeface typeFace = Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Light.ttf");
+            holder.tv_name.setTypeface(typeFace);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
