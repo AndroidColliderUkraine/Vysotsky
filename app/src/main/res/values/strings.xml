@@ -13,6 +13,9 @@
     <string name="comment_hint">Оставьте, пожайлуйста, свой комментарий..</string>
     <string name="nadislaty_rozrobniku">Надіслати Розробнику</string>
     <string name="pishit_sudi">Пишіть сюди...</string>
+    <string name="favorite">Любимые</string>
+    <string name="search">Поиск</string>
+    <string name="sorting">Сортировка</string>
 
 
     <string name="slava_ukraini">\n\nПісня відправлена з \"Колядник\"\nСлава Україні!</string>
@@ -27,5 +30,8 @@
     <string name="crash_toast_text">Oooops, crash!</string>
 
     <string name="succesfull_comm_add_message">Комментарий добавлен</string>
+
+
+
 
 </resources>

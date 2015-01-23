@@ -208,7 +208,8 @@ public class DBupdater {
                         serverUpdateDates.add(NumberConverter.dateToLongConverter(result.getString("Song_up")));
                         serverUpdateDates.add(NumberConverter.dateToLongConverter(result.getString("Comment_up")));
 
-                        ArrayList<Long> localUpdateDates = dataSource.getLocalUpdates();
+                        SharedPref sPref = new SharedPref(context);
+                        ArrayList<Long> localUpdateDates = sPref.getLocalUpdates();
 
                         Log.i(TAG + " local updates", localUpdateDates.toString());
                         Log.i(TAG + " server updates", serverUpdateDates.toString());

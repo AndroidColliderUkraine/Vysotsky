@@ -38,7 +38,20 @@
             android:paddingTop="3dp"
             android:paddingRight="3dp"
             android:paddingBottom="3dp">
-            <TextView
+            <!--<TextView
+                android:id="@+id/tv_song_text"
+                android:gravity="left"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textColor="@color/text_color"
+                android:textIsSelectable="true"
+                android:background="@drawable/background_for_songs"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="6dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="6dp"
+                android:paddingRight="6dp" />-->
+            <WebView
                 android:id="@+id/tv_song_text"
                 android:gravity="left"
                 android:layout_height="wrap_content"
@@ -185,6 +198,19 @@
         android:padding="5dp"
         android:textSize="15dp"
         android:id="@+id/textView" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_for_songs"
+        android:text="HTML"
+        android:id="@+id/checkBox_html"
+        android:layout_above="@+id/iv_plus"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:padding="5dp" />
 
 
 </RelativeLayout>

@@ -33,7 +33,7 @@ public class DataSource {
     private DBhelperLocalDB dbHelperLocal;
     private SQLiteDatabase dbLocal;
     private Context context;
-    private SharedPreferences sharedPreferences;
+    private SharedPref sPref;
     private final static String APP_PREFERENCES = "VysotskyPref";
 
     private final static String[] tableNames = new String[]{"Song", "Comment"};
@@ -41,8 +41,8 @@ public class DataSource {
 
     public DataSource(Context context) {
         this.context = context;
-        this.sharedPreferences = context.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         dbHelperLocal = new DBhelperLocalDB(context);
+        sPref = new SharedPref(context);
     }
 
     //Open database
@@ -55,17 +55,7 @@ public class DataSource {
         dbLocal.close();
     }
 
-    public void setLocalUpdateDates(String table, long time) {
-        sharedPreferences.edit().putLong(table, time).apply();
-    }
 
-    public ArrayList<Long> getLocalUpdates() {
-        ArrayList<Long> localUpdates = new ArrayList<>();
-        for (int i = 0; i < tableNames.length; i++) {
-            localUpdates.add(sharedPreferences.getLong(tableNames[i], 0));
-        }
-        return localUpdates;
-    }
 
 
     public void putJsonObjectToLocalTable(String tableName, JSONObject jsonObject) {
@@ -85,7 +75,14 @@ public class DataSource {
                     cv.put("Name", jsonObject.getString("Name"));
                     cv.put("Text", jsonObject.getString("Text"));
                     cv.put("Chord", jsonObject.getString("Chord"));
-                    cv.put("Year", jsonObject.getInt("Year"));
+
+                    String year = jsonObject.getString("Year");
+                    if (year.isEmpty()){
+                        cv.put("Year", 0);
+                    } else {
+                        cv.put("Year", Integer.parseInt(year));
+                    }
+
                     cv.put("About", jsonObject.getString("About"));
                     cv.put("VideoLink", jsonObject.getString("VideoLink"));
                     cv.put("Rating", jsonObject.getLong("Rating"));
@@ -101,7 +98,7 @@ public class DataSource {
                     count = dbLocal.delete(tableName, "id_song = ?", new String[]{String.valueOf(idSongServer)});
                 }
                 if (count > 0) {
-                    setLocalUpdateDates(tableName, updateTime);
+                    sPref.setLocalUpdateDates(tableName, updateTime);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -132,7 +129,7 @@ public class DataSource {
                     count = dbLocal.delete(tableName, "id_comment = ?", new String[]{String.valueOf(idCommentServer)});
                 }
                 if (count > 0) {
-                    setLocalUpdateDates(tableName, updateTime);
+                    sPref.setLocalUpdateDates(tableName, updateTime);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -298,31 +295,23 @@ public class DataSource {
         //ArrayList<Song> songsList = new ArrayList<>();
         //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
         if (cursor.moveToFirst()) {
-            int dataColIndex = cursor.getColumnIndex("data");
+            int dataColIndex = cursor.getColumnIndex("Text");
             String data = cursor.getString(dataColIndex);
             data = data.toLowerCase();
+            cursor.close();
+            closeLocal();
             if (data.contains(text)) {
                 return true;
             } else {
                 return false;
             }
         } else {
+            cursor.close();
+            closeLocal();
             return false;
         }
     }
 
-    public void savePref(String sPrefType, boolean wasStarted) {
-        if (sPrefType.equals("wasStarted")) {
-            sharedPreferences.edit().
-                    putBoolean(sPrefType, wasStarted)
-                    .apply();
-        }
-
-    }
-
-    public boolean isNotFirstStart() {
-        return sharedPreferences.getBoolean("wasStarted", false);
-    }
 
     public Cursor getUpdatebleRowsFromLocal(String tableName, long updateFrom) {
         openLocal();

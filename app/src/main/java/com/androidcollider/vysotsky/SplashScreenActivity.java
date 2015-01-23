@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.androidcollider.vysotsky.database.DBupdater;
 import com.androidcollider.vysotsky.database.DataSource;
+import com.androidcollider.vysotsky.database.SharedPref;
 import com.androidcollider.vysotsky.utils.InternetHelper;
 
 
@@ -61,7 +62,8 @@ public class SplashScreenActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 DataSource dataSource = new DataSource(context);
-                if (dataSource.isNotFirstStart()) {
+                SharedPref sPref = new SharedPref(getApplicationContext());
+                if (sPref.isNotFirstStart()) {
                     if (InternetHelper.isConnectionEnabled(context)) {
                         DBupdater dBupdater = new DBupdater(context, "start");
                         dBupdater.checkAndUpdateTables();
@@ -73,7 +75,7 @@ public class SplashScreenActivity extends Activity {
                     }
                 } else {
                     if (InternetHelper.isConnectionEnabled(context)) {
-                        dataSource.savePref("wasStarted", true);
+                        sPref.savePref("wasStarted", true);
                         DBupdater dBupdater = new DBupdater(context, "start");
                         dBupdater.checkAndUpdateTables();
                     } else {

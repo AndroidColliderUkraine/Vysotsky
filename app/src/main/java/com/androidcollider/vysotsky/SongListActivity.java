@@ -14,9 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.androidcollider.vysotsky.adapters.SongAdapter;
 import com.androidcollider.vysotsky.database.DataSource;
@@ -227,14 +230,58 @@ public class SongListActivity extends Activity {
     }
 
     private void drawerInit(){
-        String[] drawerItems = getResources().getStringArray(R.array.drawer_array);
-        ListView drawerList = (ListView) findViewById(R.id.left_drawer);
+        String[] sortTypes = getResources().getStringArray(R.array.sort_array);
+        Spinner sort_spinner = (Spinner)findViewById(R.id.sort_spinner);
+
+        sort_spinner.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, sortTypes));
+        /*sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        sortByName();
+                        break;
+
+                    case 1:
+                        sortByRating();
+                        break;
+                }
+            }
+        });*/
+
+        final EditText et_search_song_drawer =(EditText)findViewById(R.id.et_search_song_drawer);
+        et_search_song_drawer.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                songAdapter.search(et_search_song_drawer.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        CheckBox cb_favorite = (CheckBox)findViewById(R.id.cb_favorite);
+        cb_favorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            }
+        });
+
+        /*String[] drawerItems = getResources().getStringArray(R.array.drawer_array);
+        ListView drawerList = (ListView) findViewById(R.id.left_drawer1);
 
         // Set the adapter for the list view
         drawerList.setAdapter(new ArrayAdapter<String>(this,
                  R.layout.drawer_list_item, drawerItems));
         // Set the list's click listener
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        drawerList.setOnItemClickListener(new DrawerItemClickListener());*/
     }
 
 }

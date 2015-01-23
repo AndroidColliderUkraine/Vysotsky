@@ -10,12 +10,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,7 +37,8 @@ public class TextActivity extends Activity {
 
     private final static String TAG = "Андроідний Коллайдер";
 
-    private TextView tv_song_title, tv_song_text, tv_song_remarks, tv_song_source, tv_song_comments;
+    private TextView tv_song_title, /*tv_song_text,*/ tv_song_remarks, tv_song_source, tv_song_comments;
+    private WebView tv_song_text;
     private EditText et_user_name, et_comment;
     private Button btn_comment;
     private DataSource dataSource;
@@ -43,6 +48,8 @@ public class TextActivity extends Activity {
     private SharedPreferences sharedPreferences;
     private StringBuffer commentSB;
     private final static String APP_PREFERENCES = "KoljadnikPref";
+
+    private CheckBox html_cb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +64,32 @@ public class TextActivity extends Activity {
         song = dataSource.getSongAdvancedInfo(song);
         Log.i(TAG,song.toString());
         initFields();
+/*
+        html_cb = (CheckBox)findViewById(R.id.checkBox_html);
+        html_cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    tv_song_text.setText(Html.fromHtml(song.getText()));
+                } else {
+                    tv_song_text.setText(song.getText());
+                }
+            }
+        });*/
     }
 
     private void initFields(){
-        tv_song_text = (TextView)findViewById(R.id.tv_song_text);
-        tv_song_text.setText(song.getText());
+        //tv_song_text = (TextView)findViewById(R.id.tv_song_text);
+        tv_song_text = (WebView)findViewById(R.id.tv_song_text);
+        tv_song_text.loadDataWithBaseURL(null, song.getText(), "text/html", "UTF-8", null);
 
-        tv_song_text.setTextSize(textSize);
+        //tv_song_text.setTextSize(textSize);
         ((TextView)findViewById(R.id.tv_commentari)).setTextSize(textSize+1);
 
         iv_minus = (ImageView)findViewById(R.id.iv_minus);
         iv_plus = (ImageView)findViewById(R.id.iv_plus);
 
-        iv_plus.setOnClickListener(new View.OnClickListener() {
+        /*iv_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (textSize<25){
@@ -92,7 +112,7 @@ public class TextActivity extends Activity {
                     ((TextView)findViewById(R.id.tv_commentari)).setTextSize(textSize+1);
                 }
             }
-        });
+        });*/
 
         tv_song_comments = (TextView)findViewById(R.id.tv_song_comments);
 

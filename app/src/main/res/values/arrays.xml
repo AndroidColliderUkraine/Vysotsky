@@ -15,4 +15,11 @@
         <item>Фотоматериалы</item>
         <item>Настройки</item>
     </string-array>
+
+    <string-array
+        name="sort_array">
+        <item>Рейтинг</item>
+        <item>Алфавит</item>
+        <item>Год написания</item>
+    </string-array>
 </resources>
