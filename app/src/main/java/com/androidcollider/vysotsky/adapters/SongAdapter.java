@@ -51,6 +51,23 @@ public class SongAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+
+    public void showFavorite() {
+        songsList.clear();
+        for (int i = 0; i < allSongList.size(); i++) {
+            if (allSongList.get(i).isFavorite()) {
+                songsList.add(allSongList.get(i));
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void showAll() {
+        songsList.clear();
+        songsList.addAll(allSongList);
+        notifyDataSetChanged();
+    }
+
     // the number of elements
     @Override
     public int getCount() {
@@ -73,6 +90,7 @@ public class SongAdapter extends BaseAdapter {
     static class ViewHolder {
         public TextView tv_name;
         public ImageView iv_rating;
+        public ImageView iv_favorite;
     }
 
     // list item_for_routes_listview
@@ -87,6 +105,7 @@ public class SongAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.tv_name = (TextView) view.findViewById(R.id.tv_item_song_name);
             holder.iv_rating= (ImageView) view.findViewById(R.id.iv_item_song_rating);
+            holder.iv_favorite= (ImageView) view.findViewById(R.id.iv_item_song_favorite);
             Typeface typeFace = Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Light.ttf");
             holder.tv_name.setTypeface(typeFace);
             view.setTag(holder);
@@ -95,6 +114,11 @@ public class SongAdapter extends BaseAdapter {
         }
         Song song = getItem(position);
         holder.tv_name.setText(song.getName());
+        if (song.isFavorite()){
+            holder.iv_favorite.setImageDrawable(context.getResources().getDrawable(R.drawable.heart));
+        } else{
+            holder.iv_favorite.setImageDrawable(context.getResources().getDrawable(R.drawable.heart_white));
+        }
 
         long ratingRange = Song.current_max_rating-Song.current_min_rating;
 

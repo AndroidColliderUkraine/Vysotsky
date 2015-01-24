@@ -33,8 +33,7 @@ public class DataSource {
     private DBhelperLocalDB dbHelperLocal;
     private SQLiteDatabase dbLocal;
     private Context context;
-    private SharedPreferences sharedPreferences;
-    private final static String APP_PREFERENCES = "VysotskyPref";
+    private SharedPref sPref;
 
     private final static String[] tableNames = new String[]{"Song", "Comment"};
 
@@ -86,11 +85,11 @@ public class DataSource {
                     cv.put("About", jsonObject.getString("About"));
                     cv.put("VideoLink", jsonObject.getString("VideoLink"));
                     cv.put("Rating", jsonObject.getLong("Rating"));
-                    cv.put("LocalRating", 0);
-                    cv.put("IsFavorite", 0);
                     count = dbLocal.update(tableName, cv, "id_song = ?", new String[]{String.valueOf(idSongServer)});
                     if (count == 0) {
                         cv.put("id_song", idSongServer);
+                        cv.put("LocalRating", 0);
+                        cv.put("IsFavorite", 0);
                         count = dbLocal.insert("Song", null, cv);
                     }
                     cv.clear();
@@ -139,11 +138,11 @@ public class DataSource {
         closeLocal();
     }
 
-    public ArrayList<Song> getSongMainInfo(int idType) {
+    public ArrayList<Song> getSongMainInfo() {
         openLocal();
         Cursor cursor = dbLocal.query("Song", null, null, null, null, null, null);
         ArrayList<Song> songsList = new ArrayList<>();
-        Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
+        Log.i(TAG, " кількість типу "+cursor.getCount());
         if (cursor.moveToFirst()) {
             int nameColIndex = cursor.getColumnIndex("Name");
             int ratingColIndex = cursor.getColumnIndex("Rating");
@@ -362,6 +361,22 @@ public class DataSource {
     public void deleteCommentFromLocalComments(int idComment){
         openLocal();
         dbLocal.delete("LocalComment", "id = ?", new String[]{String.valueOf(idComment)});
+        closeLocal();
+    }
+
+    public void makeSongFavorite(int id, boolean isFavorite){
+        openLocal();
+        //Add data to table Comment
+
+        ContentValues cv = new ContentValues();
+        if (isFavorite){
+            cv.put("IsFavorite", 1);
+        } else {
+            cv.put("IsFavorite", 0);
+        }
+        dbLocal.update("Song",cv,"id_song=?",new String[]{String.valueOf(id)});
+        cv.clear();
+
         closeLocal();
     }
 }

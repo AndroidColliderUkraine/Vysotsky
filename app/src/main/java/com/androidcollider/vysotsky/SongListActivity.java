@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,7 +22,6 @@ import android.widget.Spinner;
 
 import com.androidcollider.vysotsky.adapters.SongAdapter;
 import com.androidcollider.vysotsky.database.DataSource;
-import com.androidcollider.vysotsky.listeners.DrawerItemClickListener;
 import com.androidcollider.vysotsky.objects.Song;
 
 import java.util.ArrayList;
@@ -43,6 +41,7 @@ public class SongListActivity extends Activity {
     private ArrayList<String> sortTypeArrayList;
     private ImageView iv_search_sort;
     private String typeName;
+    private boolean isShowingFavorite =false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +61,7 @@ public class SongListActivity extends Activity {
         initFields();
         initListeners();
 
-        songList = dataSource.getSongMainInfo(intent.getIntExtra("SongType",-1));
+        songList = dataSource.getSongMainInfo();
         for (Song song: songList){
             Log.i("T", song.getName());
         }
@@ -171,21 +170,35 @@ public class SongListActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (Build.VERSION.SDK_INT>10){
-            if (getActionBar()!=null){
-                getActionBar().setTitle(typeName);
-            }
             getActionBar().setBackgroundDrawable(getResources().getDrawable(R.color.action_bar_color));
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_song_list, menu);
+        if (!isShowingFavorite){
+            menuInflater.inflate(R.menu.menu_off, menu);
+        } else {
+            menuInflater.inflate(R.menu.menu_on, menu);
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        if (item.getItemId()==R.id.show_favorite){
+            songAdapter.showFavorite();
+            isShowingFavorite = true;
+            if (Build.VERSION.SDK_INT > 10) {
+                invalidateOptionsMenu();
+            }
+        } else if (item.getItemId()==R.id.show_all){
+            songAdapter.showAll();
+            isShowingFavorite = false;
+            if (Build.VERSION.SDK_INT > 10) {
+                invalidateOptionsMenu();
+            }
+        }
         if (item.getItemId()==R.id.add_song){
             /*Intent intent = new Intent(this, SubmitActivity.class);
             startActivity(intent);*/
@@ -284,4 +297,11 @@ public class SongListActivity extends Activity {
         drawerList.setOnItemClickListener(new DrawerItemClickListener());*/
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        songList.clear();
+        songList = dataSource.getSongMainInfo();
+        songAdapter.updateData(songList);
+    }
 }

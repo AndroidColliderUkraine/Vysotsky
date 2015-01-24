@@ -44,16 +44,16 @@ public class SplashScreenActivity extends Activity {
         fadeInAC = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
 
         iv_splash_title_main = (ImageView) findViewById(R.id.iv_splash_title_main);
-        iv_splash_title_hat = (ImageView) findViewById(R.id.iv_splash_title_hat);
+        //iv_splash_title_hat = (ImageView) findViewById(R.id.iv_splash_title_hat);
         tv_ac = (TextView) findViewById(R.id.tv_ac);
 
 
         iv_splash_title_main.setAnimation(fadeInAC);
-        iv_splash_title_hat.setAnimation(slideDownHat);
+        //iv_splash_title_hat.setAnimation(slideDownHat);
         tv_ac.setAnimation(fadeInAC);
 
 
-        slideDownHat.setAnimationListener(new Animation.AnimationListener() {
+        fadeInAC.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 

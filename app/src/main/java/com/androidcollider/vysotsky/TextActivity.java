@@ -4,26 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +38,9 @@ public class TextActivity extends Activity {
 
     private final static String TAG = "Андроідний Коллайдер";
 
-    private TextView tv_song_title, tv_song_text, tv_song_remarks, tv_song_source, tv_song_comments;
+    private TextView tv_song_title,/* tv_song_text,*/ tv_song_remarks, tv_song_source, tv_user_name, tv_date_posted, tv_comment_text;
+    private WebView tv_song_text;
+    private LayoutInflater lInflater;
     private EditText et_user_name, et_comment;
     private Button btn_comment;
     private DataSource dataSource;
@@ -54,7 +53,10 @@ public class TextActivity extends Activity {
     private String text;
     private ScrollView text_scrollView;
     private int scrollingSpeed = 0;
-
+    private int accordNumber = 0;
+    private boolean isFavorite;
+    private LinearLayout ll_song_comments_item,ll_song_comments;
+    private View view;
 
     private int verticalScrollMax;
     private Timer scrollTimer = null;
@@ -65,6 +67,7 @@ public class TextActivity extends Activity {
     private Boolean isFaceDown = true;
     private Timer clickTimer = null;
     private Timer faceTimer = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,7 @@ public class TextActivity extends Activity {
         song = intent.getParcelableExtra("Song");
         dataSource = new DataSource(this);
         song = dataSource.getSongAdvancedInfo(song);
+        isFavorite = song.isFavorite();
         Log.i(TAG, song.toString());
 
         text = song.getText();
@@ -84,10 +88,13 @@ public class TextActivity extends Activity {
     }
 
     private void initFields() {
-        tv_song_text = (TextView) findViewById(R.id.tv_song_text);
-        tv_song_text.setText(Html.fromHtml(text));
+        //tv_song_text = (TextView) findViewById(R.id.tv_song_text);
+        tv_song_text = (WebView) findViewById(R.id.tv_song_text);
+        //tv_song_text.loadData("<style>  body background-color: #f0f0f0;}pre{white-space:pre-wrap;font-family: 'Open Sans', sans-serif; </style>"+text,"text/html", "en_US");
+        tv_song_text.loadDataWithBaseURL(null,"<style> body { background-color: #f0f0f0; } pre{ white-space:pre-wrap; font-family: 'Open Sans', sans-serif; font-size: "+textSize+"pt;} </style>"+text,"text/html", "UTF-8", null);
+        //tv_song_text.setText(Html.fromHtml(text));
 
-        tv_song_text.setTextSize(textSize);
+        //tv_song_text.setTextSize(textSize);
         ((TextView) findViewById(R.id.tv_commentari)).setTextSize(textSize + 1);
 
         iv_minus = (ImageView) findViewById(R.id.iv_minus);
@@ -96,10 +103,12 @@ public class TextActivity extends Activity {
         iv_plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (textSize < 25) {
+                if (textSize < 35) {
                     textSize++;
                     sharedPreferences.edit().putInt("fontSize", textSize).commit();
-                    tv_song_text.setTextSize(textSize);
+                    tv_song_text.loadDataWithBaseURL(null,"<style> body { background-color: #f0f0f0; } pre{ white-space:pre-wrap; font-family: 'Open Sans', sans-serif; font-size: "+textSize+"pt;} </style>"+text,"text/html", "UTF-8", null);
+
+                    //tv_song_text.setTextSize(textSize);
                     ((TextView)findViewById(R.id.tv_commentari)).setTextSize(textSize+1);
                 }
             }
@@ -108,17 +117,18 @@ public class TextActivity extends Activity {
         iv_minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (textSize > 10) {
+                if (textSize > 5) {
                     textSize--;
                     sharedPreferences.edit().putInt("fontSize", textSize).commit();
+                    tv_song_text.loadDataWithBaseURL(null,"<style> body { background-color: #f0f0f0; } pre{ white-space:pre-wrap; font-family: 'Open Sans', sans-serif; font-size: "+textSize+"pt;} </style>"+text,"text/html", "UTF-8", null);
 
-                    tv_song_text.setTextSize(textSize);
+                    //tv_song_text.setTextSize(textSize);
                     ((TextView) findViewById(R.id.tv_commentari)).setTextSize(textSize + 1);
                 }
             }
         });
 
-        tv_song_comments = (TextView) findViewById(R.id.tv_song_comments);
+        //tv_song_comments = (TextView) findViewById(R.id.tv_song_comments);
 
         et_user_name = (EditText) findViewById(R.id.et_username);
         et_comment = (EditText) findViewById(R.id.et_comment_field);
@@ -140,11 +150,20 @@ public class TextActivity extends Activity {
         iv_down_acc = (ImageView) findViewById(R.id.iv_down_acc);
         iv_up_acc = (ImageView) findViewById(R.id.iv_up_acc);
 
+        final TextView tv_acc_number = (TextView)findViewById(R.id.tv_acc_number);
         iv_down_acc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 text = AccordUtil.downAccord(text);
-                tv_song_text.setText(Html.fromHtml(text));
+                accordNumber--;
+                if (accordNumber>0){
+                    tv_acc_number.setText("+"+String.valueOf(accordNumber));
+                } else {
+                    tv_acc_number.setText(String.valueOf(accordNumber));
+                }
+                tv_song_text.loadDataWithBaseURL(null,"<style> body { background-color: #f0f0f0; } pre{ white-space:pre-wrap; font-family: 'Open Sans', sans-serif; font-size: "+textSize+"pt;} </style>"+text,"text/html", "UTF-8", null);
+
+                //tv_song_text.setText(Html.fromHtml(text));
             }
         });
 
@@ -152,7 +171,15 @@ public class TextActivity extends Activity {
             @Override
             public void onClick(View v) {
                 text = AccordUtil.upAccord(text);
-                tv_song_text.setText(Html.fromHtml(text));
+                accordNumber++;
+                if (accordNumber>0){
+                    tv_acc_number.setText("+"+String.valueOf(accordNumber));
+                } else {
+                    tv_acc_number.setText(String.valueOf(accordNumber));
+                }
+                tv_song_text.loadDataWithBaseURL(null,"<style> body { background-color: #f0f0f0; } pre{ white-space:pre-wrap; font-family: 'Open Sans', sans-serif; font-size: "+textSize+"pt;} </style>"+text,"text/html", "UTF-8", null);
+
+                // tv_song_text.setText(Html.fromHtml(text));
             }
         });
 
@@ -161,11 +188,13 @@ public class TextActivity extends Activity {
         iv_down_scroll = (ImageView) findViewById(R.id.iv_down_scroll);
         iv_up_scroll = (ImageView) findViewById(R.id.iv_up_scroll);
 
+        final TextView tv_scroll_speed = (TextView)findViewById(R.id.tv_scroll_speed);
         iv_down_scroll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (scrollPos < text_scrollView.getBottom()) {
                     scrollingSpeed++;
+                    tv_scroll_speed.setText(String.valueOf(Math.abs(scrollingSpeed)));
                     if (scrollingSpeed==0){
                         stopAutoScrolling();
                     } else {
@@ -181,6 +210,7 @@ public class TextActivity extends Activity {
             public void onClick(View v) {
                 if (scrollPos > text_scrollView.getTop()) {
                     scrollingSpeed--;
+                    tv_scroll_speed.setText(String.valueOf(Math.abs(scrollingSpeed)));
                     if (scrollingSpeed==0){
                         stopAutoScrolling();
                     } else {
@@ -191,6 +221,12 @@ public class TextActivity extends Activity {
             }
         });
 
+        lInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        ll_song_comments = (LinearLayout)findViewById(R.id.ll_song_comments);
+        //ll_song_comments_item = (LinearLayout)findViewById(R.id.ll_song_comments_item);
+
+
 
         addAllComments();
     }
@@ -198,7 +234,11 @@ public class TextActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_text, menu);
+        if (!isFavorite){
+            menuInflater.inflate(R.menu.menu_off, menu);
+        } else {
+            menuInflater.inflate(R.menu.menu_on, menu);
+        }
         if (Build.VERSION.SDK_INT > 10) {
             if (getActionBar() != null) {
                 getActionBar().setTitle(song.getName());
@@ -211,12 +251,22 @@ public class TextActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.share_song) {
-            shareSong();
+        if (item.getItemId() == R.id.show_favorite) {
+            dataSource.makeSongFavorite(song.getId(),true);
+            isFavorite = true;
+            if (Build.VERSION.SDK_INT > 10) {
+                invalidateOptionsMenu();
+            }
+        }else if (item.getItemId() == R.id.show_all) {
+            dataSource.makeSongFavorite(song.getId(),false);
+            isFavorite = false;
+            if (Build.VERSION.SDK_INT > 10) {
+                invalidateOptionsMenu();
+            }
         }
-        if (item.getItemId() == R.id.sms_song) {
+        /*if (item.getItemId() == R.id.sms_song) {
             sendSms();
-        }
+        }*/
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
@@ -257,16 +307,29 @@ public class TextActivity extends Activity {
         commentSB = new StringBuffer();
 
         for (Comment comment : song.getComments()) {
-            commentSB.append("  " + comment.getUserName() + "       " + comment.getDatePosted() + "\n");
-            commentSB.append(comment.getText() + "\n\n");
+            view = lInflater.inflate(R.layout.item_comment,null);
+            tv_user_name = (TextView)view.findViewById(R.id.tv_user_name);
+            tv_date_posted = (TextView)view.findViewById(R.id.tv_date_posted);
+            tv_comment_text = (TextView)view.findViewById(R.id.tv_comment_text);
+
+            tv_comment_text.setText(comment.getText());
+            tv_user_name.setText(comment.getUserName());
+            tv_date_posted.setText(comment.getDatePosted().substring(0,comment.getDatePosted().length()-3));
+            ll_song_comments.addView(view);
         }
-        tv_song_comments.setText(commentSB);
+        //tv_song_comments.setText(commentSB);
     }
 
     private void addOneCommentToCommentView(Comment comment) {
-        commentSB.append("  " + comment.getUserName() + "       " + comment.getDatePosted() + "\n");
-        commentSB.append(comment.getText() + "\n\n");
-        tv_song_comments.setText(commentSB);
+         view = lInflater.inflate(R.layout.item_comment,null);
+            tv_user_name = (TextView)view.findViewById(R.id.tv_user_name);
+            tv_date_posted = (TextView)view.findViewById(R.id.tv_date_posted);
+            tv_comment_text = (TextView)view.findViewById(R.id.tv_comment_text);
+
+            tv_comment_text.setText(comment.getText());
+            tv_user_name.setText(comment.getUserName());
+            tv_date_posted.setText(comment.getDatePosted().substring(0,comment.getDatePosted().length()-3));
+            ll_song_comments.addView(view);
     }
 
 

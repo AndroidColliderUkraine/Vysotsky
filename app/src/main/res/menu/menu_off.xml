@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/show_favorite"
+        android:title="@string/action_settings"
+        android:showAsAction="always"
+        android:icon="@drawable/heart_white_action_off"
+       />
     <item android:id="@+id/add_song"
         android:title="@string/action_settings"
         android:showAsAction="always"
-       />
+        android:icon="@drawable/add"
+        />
     <!--android:icon="@drawable/add_song"-->
 </menu>

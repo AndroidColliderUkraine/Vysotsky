@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/action_bar_color"
     android:orientation="vertical" >
 
     <!-- <TextView
@@ -15,57 +16,46 @@
          android:gravity="center_horizontal"/>-->
 
     <ImageView
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:id="@+id/iv_splash_title_main"
-        android:src="@drawable/logo_main"
-        android:layout_centerInParent="true"
-        android:layout_height="110dp" />
+        android:src="@drawable/vysottskyy"
+        android:layout_height="wrap_content"
+        android:paddingBottom="70dp" />
 
-    <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:id="@+id/iv_splash_title_hat"
-        android:src="@drawable/logo_hat"
-        android:layout_alignRight="@+id/iv_splash_title_main"
-        android:layout_alignEnd="@+id/iv_splash_title_main"
-        android:layout_marginRight="163dp"
-        android:layout_alignBottom="@+id/iv_splash_title_main"
-        android:layout_marginBottom="71dp" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_loading_status"
+            android:gravity="center_horizontal"
+            android:textColor="@color/text_color"
+            android:layout_alignParentTop="true"/>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/pb_loading_new_data"
+            android:indeterminate="false"
+            android:focusable="false"
+            android:layout_below="@id/tv_loading_status"
+            android:layout_marginBottom="15dp"
+            android:visibility="gone" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_ac"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/android_collider_company"
-        android:textColor="@color/edit_text_white_color"
+        android:textColor="@color/text_color"
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:layout_marginBottom="10dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_loading_status"
-        android:gravity="center_horizontal"
-        android:textColor="@color/edit_text_white_color"
-        android:layout_alignBottom="@+id/iv_splash_title_main"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp" />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/pb_loading_new_data"
-        android:indeterminate="false"
-        android:focusable="false"
-        android:layout_alignBottom="@+id/iv_splash_title_main"
-        android:layout_alignLeft="@+id/iv_splash_title_hat"
-        android:layout_alignStart="@+id/iv_splash_title_hat"
-        android:layout_marginBottom="15dp"
-        android:visibility="gone" />
 
 </RelativeLayout>

@@ -62,7 +62,7 @@ public class DBupdater {
     // Ratings
     public void updateServerRatings() {
         if (mode.equals("start")) {
-            ((SplashScreenActivity) context).setLoadingStatus("Завантаження рейтингів");
+            ((SplashScreenActivity) context).setLoadingStatus("Загрузка рейтингов");
         }
         ArrayList<SongForUpdateRating> songListForUpdateRatings = dataSource.getSongsForUpdateRating();
 
@@ -127,7 +127,7 @@ public class DBupdater {
     //Comments
     private void updateServerComments() {
         if (mode.equals("start")) {
-            ((SplashScreenActivity) context).setLoadingStatus("Загрузка коментарие");
+            ((SplashScreenActivity) context).setLoadingStatus("Загрузка комментариев");
         }
         ArrayList<Comment> commentListForServerUpdate = dataSource.getLocalComments();
 
@@ -225,7 +225,7 @@ public class DBupdater {
                             setProgramChange();
                         } else {
                             if (mode.equals("start")) {
-                                ((SplashScreenActivity) context).setLoadingStatus("Оновлення бази пісень");
+                                ((SplashScreenActivity) context).setLoadingStatus("Обновление базы песен");
                             }
                             /*for (int i = 0; i < tableNames.length; i++) {
                                 if (serverUpdateDates.get(i) > localUpdateDates.get(i)) {

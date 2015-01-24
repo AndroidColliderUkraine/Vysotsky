@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="7dp"
+    android:padding="10dp"
     android:background="@drawable/background_for_songs">
 
     <TextView
@@ -13,10 +13,30 @@
         android:textSize="21dp"
         android:textColor="@color/text_color"/>
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="20dp"
-        android:layout_gravity="right"
-        android:id="@+id/iv_item_song_rating"
-        android:textColor="@color/edit_text_white_color"/>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="right"
+            android:id="@+id/iv_item_song_favorite"
+            android:textColor="@color/edit_text_white_color"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_width="110dp"
+            android:layout_height="18dp"
+            android:layout_gravity="right"
+            android:id="@+id/iv_item_song_rating"
+            android:textColor="@color/edit_text_white_color"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
 </LinearLayout>

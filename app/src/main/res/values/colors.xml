@@ -16,5 +16,6 @@
     <color name="christmas_tree_color">#ff158705</color>
     <color name="element_color">#ffeeeeee</color>
     <color name="contur_color">#ffcecece</color>
+    <color name="comment_color">#ffa5a5a5</color>
 
 </resources>
