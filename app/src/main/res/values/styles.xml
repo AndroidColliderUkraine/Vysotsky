@@ -17,4 +17,32 @@
     <style name="Widget.MyTheme.ScrollView" parent="android:Widget.ScrollView">
         <item name="android:overScrollMode">never</item>
     </style>
+
+
+    <style name="Theme.Test" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+
+        <!-- customize the color palette -->
+        <item name="colorPrimary">@color/action_bar_color</item>
+        <item name="colorPrimaryDark">@color/bg_color</item>
+        <item name="colorAccent">@color/edit_text_white_color</item>
+        <item name="android:editTextStyle">@android:style/Widget.EditText</item>
+        <item name="windowActionBar">false</item>
+        <item name="drawerArrowStyle">@style/Theme.Test.DrawerArrowStyle</item>
+    </style>
+
+    <style name="Theme.Test.DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+
+    <style name="Widget.MyApp.ActionBar" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/action_bar_color</item>
+        <item name="theme">@style/ThemeOverlay.MyApp.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+    </style>
+
+    <style name="ThemeOverlay.MyApp.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/edit_text_white_color</item>
+    </style>
 </resources>

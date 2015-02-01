@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.provider.Settings;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.ContextThemeWrapper;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,8 +22,8 @@ import com.androidcollider.vysotsky.utils.InternetHelper;
 
 public class SplashScreenActivity extends Activity {
 
-    private ImageView iv_splash_title_main, iv_splash_title_hat;
-    private Animation slideUpMain, slideDownHat, fadeInAC;
+    private ImageView iv_splash_title_main;
+    private Animation  fadeInAC;
     private TextView tv_ac, tv_loading_status;
     private Context context;
     private ProgressBar pb_loading_data;
@@ -39,17 +39,13 @@ public class SplashScreenActivity extends Activity {
 
         pb_loading_data = (ProgressBar) findViewById(R.id.pb_loading_new_data);
 
-        slideUpMain = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down_hat);
-        slideDownHat = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
         fadeInAC = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fadein);
 
         iv_splash_title_main = (ImageView) findViewById(R.id.iv_splash_title_main);
-        //iv_splash_title_hat = (ImageView) findViewById(R.id.iv_splash_title_hat);
         tv_ac = (TextView) findViewById(R.id.tv_ac);
 
 
         iv_splash_title_main.setAnimation(fadeInAC);
-        //iv_splash_title_hat.setAnimation(slideDownHat);
         tv_ac.setAnimation(fadeInAC);
 
 
@@ -122,9 +118,9 @@ public class SplashScreenActivity extends Activity {
         pb_loading_data.setProgress(progress);
     }
 
-    public void setProgressMax(int max) {
+   /* public void setProgressMax(int max) {
         pb_loading_data.setMax(max);
-    }
+    }*/
 
     public void setProgressVisible(int visible) {
         pb_loading_data.setVisibility(visible);

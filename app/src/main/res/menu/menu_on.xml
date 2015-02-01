@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.androidcollider.koljadnik.TextActivity">
     <item android:id="@+id/show_all"
-        android:title="@string/action_settings"
-        android:showAsAction="always"
+        android:title="Favorite"
+        app:showAsAction="always"
         android:icon="@drawable/heart_white_action_on"/>
     <item android:id="@+id/add_song"
-        android:title="@string/action_settings"
-        android:showAsAction="always"
+        android:title="Add song"
+        app:showAsAction="always"
         android:icon="@drawable/add"/>
 </menu>

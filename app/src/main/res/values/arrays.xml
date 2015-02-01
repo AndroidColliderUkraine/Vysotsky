@@ -2,10 +2,10 @@
 <resources>
     <string-array
         name="submit_array">
-        <item>Додади пісню</item>
-        <item>Повідомити про помилку</item>
-        <item>Написати скаргу або зауваження</item>
-        <item>Інше</item>
+        <item>Добавить песню</item>
+        <item>Сообщить об ошибке</item>
+        <item>Написать жалобу или замечание</item>
+        <item>Другое</item>
     </string-array>
 
     <string-array
@@ -18,8 +18,7 @@
 
     <string-array
         name="sort_array">
-        <item>Рейтинг</item>
-        <item>Алфавит</item>
-        <item>Год написания</item>
+        <item>По алфавиту</item>
+        <item>По рейтингу</item>
     </string-array>
 </resources>

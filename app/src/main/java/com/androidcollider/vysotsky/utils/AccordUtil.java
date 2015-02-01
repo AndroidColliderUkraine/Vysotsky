@@ -13,298 +13,99 @@ public class AccordUtil {
     public static String[] minor_b= new String[]{"Сm","Dbm","Dm","Ebm","Em","Fm","Gbm","Gm","Abm","Am","Bbm","Bm"};
     public static String[] sept_b = new String[]{"C7","Db7","D7","Eb7","E7","F7","Gb7","G7","Ab7","A7","Bb7","B7"};
 
-    public static String downAccord(String text){
-        StringBuffer textBuffer = new StringBuffer(text);
+    public static String[] major_sus2 = new String[]{"Сsus2","С#sus2","Dsus2","D#sus2","Esus2","Fsus2","F#sus2","Gsus2","G#sus2","Asus2","A#sus2","Hsus2"};
+    public static String[] minor_sus2 = new String[]{"Сmsus2","С#msus2","Dmsus2","D#msus2","Emsus2","Fmsus2","F#msus2","Gmsus2","G#msus2","Amsus2","A#msus2","Hmsus2"};
+    public static String[] sept_sus2 = new String[]{"C7sus2","C#7sus2","D7sus2","D#7sus2","E7sus2","F7sus2","F#7sus2","G7sus2","G#7sus2","A7sus2","A#7sus2","H7sus2"};
+
+    public static String[] major_sus4 = new String[]{"Сsus4","С#sus4","Dsus4","D#sus4","Esus4","Fsus4","F#sus4","Gsus4","G#sus4","Asus4","A#sus4","Hsus4"};
+    public static String[] minor_sus4 = new String[]{"Сmsus4","С#msus4","Dmsus4","D#msus4","Emsus4","Fmsus4","F#msus4","Gmsus4","G#msus4","Amsus4","A#msus4","Hmsus4"};
+    public static String[] sept_sus4 = new String[]{"C7sus4","C#7sus4","D7sus4","D#7sus4","E7sus4","F7sus4","F#7sus4","G7sus4","G#7sus4","A7sus4","A#7sus4","H7sus4"};
+
+	public static String changeAccord(String[] chord_array, String text, int direction){
+		
+		StringBuffer textBuffer = new StringBuffer(text);
         int p=0;
         while(p!=-1)
         {
             p=-1;
-            for(int i=0; i<major.length; i++)
+            for(int i=0; i<chord_array.length; i++)
             {
-                String for_find = ">"+major[i]+"<";
+                String for_find = ">"+chord_array[i]+"<";
                 int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
                 if(a>=0){
                     p=a;
                     String next;
-                    if(i==0){
-                        next = major[11];
-                    }else{
-                        next = major[i-1];
-                    }
+					if(direction > 0)
+					{
+						if(i==11)
+						{
+							next = chord_array[0];
+						}else
+						{
+							next = chord_array[i+1];
+						}
+					}else
+					{
+						if(i==0)
+						{
+							next = chord_array[11];
+						}else
+						{
+							next = chord_array[i-1];
+						}
+					}
                     next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + major[i].length());//Видаляє попередній акорд
+                    textBuffer.delete(a + 1, a + 1 + chord_array[i].length());//Видаляє попередній акорд
                     textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
                 }
             }
         }
+	return (new String(textBuffer));	
+	}
+	
+    public static String downAccord(String text){
+		
+		text = changeAccord(major,text,-1);
+		text = changeAccord(minor,text,-1);
+		text = changeAccord(sept,text,-1);
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<minor.length; i++)
-            {
-                String for_find = ">"+minor[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==0){
-                        next = minor[11];
-                    }else{
-                        next = minor[i-1];
-                    }
-                    next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + minor[i].length());//Видаляє попередній акорд
-                    textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
-                }
-            }
-        }
+		text = changeAccord(major_b,text,-1);
+		text = changeAccord(minor_b,text,-1);
+		text = changeAccord(sept_b,text,-1);
+
+		text = changeAccord(major_sus2,text,-1);
+		text = changeAccord(minor_sus2,text,-1);
+		text = changeAccord(sept_sus2,text,-1);
+
+		text = changeAccord(major_sus4,text,-1);
+		text = changeAccord(minor_sus4,text,-1);
+		text = changeAccord(sept_sus4,text,-1);
 
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<sept.length; i++)
-            {
-                String for_find = ">"+sept[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==0){
-                        next = sept[11];
-                    }else{
-                        next = sept[i-1];
-                    }
-                    next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + sept[i].length());//Видаляє попередній акорд
-                    textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
-                }
-            }
-        }
-
-
-
-
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<major_b.length; i++)
-            {
-                String for_find = ">"+major_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==0){
-                        next = major_b[11];
-                    }else{
-                        next = major_b[i-1];
-                    }
-                    next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + major_b[i].length());//Видаляє попередній акорд
-                    textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
-                }
-            }
-        }
-
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<minor_b.length; i++)
-            {
-                String for_find = ">"+minor_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==0){
-                        next = minor_b[11];
-                    }else{
-                        next = minor_b[i-1];
-                    }
-                    next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + minor_b[i].length());//Видаляє попередній акорд
-                    textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
-                }
-            }
-        }
-
-
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<sept_b.length; i++)
-            {
-                String for_find = ">"+sept_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);// Находить перше входження рядка for_find в рядку in_str, починают з 0 символу
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==0){
-                        next = sept_b[11];
-                    }else{
-                        next = sept_b[i-1];
-                    }
-                    next= "$"+next;         //Добавляємо симлов для уникнення повторного транспонування
-                    textBuffer.delete(a + 1, a + 1 + sept_b[i].length());//Видаляє попередній акорд
-                    textBuffer.insert(a + 1, next);  //  Вставляє новий акорд
-                }
-            }
-        }
-
-        String newText = new String(textBuffer);
-        String result = newText.replace("$","");
+        String result = text.replace("$","");
         return result;
     }
 
     public static String upAccord(String text){
-        StringBuffer textBuffer = new StringBuffer(text);
+	
+		text = changeAccord(major,text,1);
+		text = changeAccord(minor,text,1);
+		text = changeAccord(sept,text,1);
 
-        int p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<major.length; i++)
-            {
-                String for_find = ">"+major[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = major[0];
-                    }else{
-                        next = major[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+major[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
+		text = changeAccord(major_b,text,1);
+		text = changeAccord(minor_b,text,1);
+		text = changeAccord(sept_b,text,1);
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<minor.length; i++)
-            {
-                String for_find = ">"+minor[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = minor[0];
-                    }else{
-                        next = minor[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+minor[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
+		text = changeAccord(major_sus2,text,1);
+		text = changeAccord(minor_sus2,text,1);
+		text = changeAccord(sept_sus2,text,1);
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<sept.length; i++)
-            {
-                String for_find = ">"+sept[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = sept[0];
-                    }else{
-                        next = sept[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+sept[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
+		text = changeAccord(major_sus4,text,1);
+		text = changeAccord(minor_sus4,text,1);
+		text = changeAccord(sept_sus4,text,1);
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<major_b.length; i++)
-            {
-                String for_find = ">"+major_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = major_b[0];
-                    }else{
-                        next = major_b[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+major_b[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
 
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<minor_b.length; i++)
-            {
-                String for_find = ">"+minor_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = minor_b[0];
-                    }else{
-                        next = minor_b[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+minor_b[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
-
-        p=0;
-        while(p!=-1)
-        {
-            p=-1;
-            for(int i=0; i<sept_b.length; i++)
-            {
-                String for_find = ">"+sept_b[i]+"<";
-                int a= textBuffer.indexOf(for_find,0);
-                if(a>=0){
-                    p=a;
-                    String next;
-                    if(i==11){
-                        next = sept_b[0];
-                    }else{
-                        next = sept_b[i+1];
-                    }
-                    next= "$"+next;
-                    textBuffer.delete(a+1, a+1+sept_b[i].length());
-                    textBuffer.insert(a+1,next);
-                }
-            }
-        }
-        String newText = new String(textBuffer);
-        String result = newText.replace("$","");
+        String result = text.replace("$","");
         return result;
     }
 }

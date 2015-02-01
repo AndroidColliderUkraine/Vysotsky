@@ -59,4 +59,30 @@ public class SharedPref {
         sharedPreferences.edit().putInt("listSettings_sort",listSettings[2]).apply();
     }
 
+    public void setShowFonts(boolean isShow){
+        sharedPreferences.edit().putBoolean("showFonts",isShow).apply();
+    }
+    public void setShowAcc(boolean isShow){
+        sharedPreferences.edit().putBoolean("showAcc",isShow).apply();
+    }
+    public void setShowScroll(boolean isShow){
+        sharedPreferences.edit().putBoolean("showScroll",isShow).apply();
+    }
+    public void setShowScreen(boolean isShow){
+        sharedPreferences.edit().putBoolean("showScreen",isShow).apply();
+    }
+
+    public boolean getShowFonts(){
+        return sharedPreferences.getBoolean("showFonts", true);
+    }
+    public boolean getShowAcc(){
+        return sharedPreferences.getBoolean("showAcc", true);
+    }
+    public boolean getShowScroll(){
+        return sharedPreferences.getBoolean("showScroll", true);
+    }
+    public boolean getShowScreen(){
+        return sharedPreferences.getBoolean("showScreen", true);
+    }
+
 }

@@ -10,5 +10,5 @@
         android:layout_height="wrap_content"
         android:id="@+id/tv_sort_type_name"
         android:textSize="18dp"
-        android:textColor="@color/text_color"/>
+        android:textColor="@color/edit_text_white_color"/>
 </LinearLayout>

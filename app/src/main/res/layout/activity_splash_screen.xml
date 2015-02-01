@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/action_bar_color"
+    android:background="@color/edit_text_white_color"
     android:orientation="vertical" >
 
     <!-- <TextView
@@ -41,11 +41,10 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id="@+id/pb_loading_new_data"
-            android:indeterminate="false"
-            android:focusable="false"
-            android:layout_below="@id/tv_loading_status"
-            android:layout_marginBottom="15dp"
-            android:visibility="gone" />
+            android:gravity="right"
+            android:visibility="invisible"
+            android:layout_below="@+id/tv_loading_status"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
     <TextView

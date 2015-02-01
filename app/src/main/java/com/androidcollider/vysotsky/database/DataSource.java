@@ -2,7 +2,6 @@ package com.androidcollider.vysotsky.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -55,8 +54,6 @@ public class DataSource {
     }
 
 
-
-
     public void putJsonObjectToLocalTable(String tableName, JSONObject jsonObject) {
 
         long updateTime = 0;
@@ -64,6 +61,8 @@ public class DataSource {
             openLocal();
             try {
                 int idSongServer = jsonObject.getInt("id");
+                String name = jsonObject.getString("Name");
+                String text = jsonObject.getString("Text");
                 updateTime = NumberConverter.dateToLongConverter(jsonObject.getString("Date"));
                 int showTo = jsonObject.getInt("ShowTo");
                 long count = 0;
@@ -71,10 +70,9 @@ public class DataSource {
                     //Add data to table Song
                     ContentValues cv = new ContentValues();
                     cv.put("Date", updateTime);
-                    cv.put("Name", jsonObject.getString("Name"));
-                    cv.put("Text", jsonObject.getString("Text"));
+                    cv.put("Name", name);
+                    cv.put("Text", text);
                     cv.put("Chord", jsonObject.getString("Chord"));
-
                     String year = jsonObject.getString("Year");
                     if (year.isEmpty()){
                         cv.put("Year", 0);
@@ -86,15 +84,23 @@ public class DataSource {
                     cv.put("VideoLink", jsonObject.getString("VideoLink"));
                     cv.put("Rating", jsonObject.getLong("Rating"));
                     count = dbLocal.update(tableName, cv, "id_song = ?", new String[]{String.valueOf(idSongServer)});
+
+                    ContentValues cv2 = new ContentValues();
+                    cv2.put("NameLower", name.toLowerCase());
+                    cv2.put("TextLower", text.toLowerCase());
+                    dbLocal.update("LowerSong", cv2, "id_song = ?", new String[]{String.valueOf(idSongServer)});
                     if (count == 0) {
                         cv.put("id_song", idSongServer);
+                        cv2.put("id_song", idSongServer);
                         cv.put("LocalRating", 0);
                         cv.put("IsFavorite", 0);
                         count = dbLocal.insert("Song", null, cv);
+                        dbLocal.insert("LowerSong", null, cv2);
                     }
                     cv.clear();
                 } else {
                     count = dbLocal.delete(tableName, "id_song = ?", new String[]{String.valueOf(idSongServer)});
+                    dbLocal.delete("LowerSong", "id_song = ?", new String[]{String.valueOf(idSongServer)});
                 }
                 if (count > 0) {
                     sPref.setLocalUpdateDates(tableName, updateTime);
@@ -223,23 +229,26 @@ public class DataSource {
     public Song getSongAdvancedInfo(Song song) {
         openLocal();
         Cursor cursor = dbLocal.query("Song", null, "id_song = ?", new String[]{String.valueOf(song.getId())}, null, null, null);
-        //ArrayList<Song> songsList = new ArrayList<>();
-        //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
         if (cursor.moveToFirst()) {
             int textColIndex = cursor.getColumnIndex("Text");
             int aboutColIndex = cursor.getColumnIndex("About");
             int chordColIndex = cursor.getColumnIndex("Chord");
             int videoLinkColIndex = cursor.getColumnIndex("VideoLink");
+            int favoriteColIndex = cursor.getColumnIndex("IsFavorite");
 
             String text = cursor.getString(textColIndex);
             String chord = cursor.getString(chordColIndex);
             String about = cursor.getString(aboutColIndex);
             String videoLink = cursor.getString(videoLinkColIndex);
-
+            boolean isFavorite = false;
+            if (cursor.getInt(favoriteColIndex)==1){
+                isFavorite = true;
+            }
             song.setText(text);
             song.setChord(chord);
             song.setAbout(about);
             song.setVideoLink(videoLink);
+            song.setFavorite(isFavorite);
         }
         cursor.close();
 
@@ -266,8 +275,8 @@ public class DataSource {
             int datePostedColIndex = cursor.getColumnIndex("DatePosted");
 
             for (int i = 0; i < cursor.getCount(); i++) {
-                commentList.add(new Comment(0, song.getId(), cursor.getString(textColIndex),
-                        cursor.getString(userNameColIndex), cursor.getString(datePostedColIndex)));
+                commentList.add(new Comment(0, song.getId(), cursor.getString(userNameColIndex), cursor.getString(textColIndex),
+                        cursor.getString(datePostedColIndex)));
                 cursor.moveToNext();
             }
 
@@ -278,8 +287,8 @@ public class DataSource {
             @Override
             public int compare(Comment comment1, Comment comment2) {
 
-                return new Long(NumberConverter.dateToLongConverter(comment1.getDatePosted())).compareTo
-                        (new Long(NumberConverter.dateToLongConverter(comment2.getDatePosted())));
+                return NumberConverter.dateToLongConverter(comment1.getDatePosted()).compareTo
+                        (NumberConverter.dateToLongConverter(comment2.getDatePosted()));
             }
         });
 
@@ -288,8 +297,7 @@ public class DataSource {
         return song;
     }
 
-    public boolean isTextContainsChars(int songId, String text) {
-        openLocal();
+    /*public boolean isTextContainsChars(int songId, String text) {
         Cursor cursor = dbLocal.query("Song", null, "id_song = ?", new String[]{String.valueOf(songId)}, null, null, null);
         //ArrayList<Song> songsList = new ArrayList<>();
         //Log.i(TAG, " кількість типу id=" + idType + "     " + cursor.getCount());
@@ -298,7 +306,6 @@ public class DataSource {
             String data = cursor.getString(dataColIndex);
             data = data.toLowerCase();
             cursor.close();
-            closeLocal();
             if (data.contains(text)) {
                 return true;
             } else {
@@ -306,18 +313,10 @@ public class DataSource {
             }
         } else {
             cursor.close();
-            closeLocal();
             return false;
         }
-    }
+    }*/
 
-
-    public Cursor getUpdatebleRowsFromLocal(String tableName, long updateFrom) {
-        openLocal();
-        Cursor cursor = dbLocal.query(tableName, null, "update_time > ?", new String[]{String.valueOf(updateFrom)}, null, null, null);
-
-        return cursor;
-    }
 
     public void addCommentToLocal(Comment comment) {
         openLocal();
@@ -378,5 +377,42 @@ public class DataSource {
         cv.clear();
 
         closeLocal();
+    }
+
+    public ArrayList<Integer> getSerachRawQuaryArrayList(String str){
+        ArrayList<Integer> ids = new ArrayList<>();
+        openLocal();
+        Cursor cursor = dbLocal.rawQuery("SELECT id_song FROM LowerSong WHERE (TextLower LIKE '%"+str+"%' OR NameLower LIKE '%"+str+"%')",null);
+        if (cursor.moveToFirst()) {
+            int songIdColIndex = cursor.getColumnIndex("id_song");
+            do{
+                ids.add(cursor.getInt(songIdColIndex));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeLocal();
+        return ids;
+    }
+
+    public void copyDataToLowerCaseTable(){
+        openLocal();
+        Cursor cursor1 = dbLocal.query("Song", null, null, null, null, null, null);
+        Cursor cursor2 = dbLocal.query("LowerSong", null, null, null, null, null, null);
+
+        if (cursor1.getCount()>cursor2.getCount()){
+            dbLocal.delete("LowerSong", null, null);
+            if (cursor1.moveToFirst()){
+                int idIndex = cursor1.getColumnIndex("id_song");
+                int nameIndex = cursor1.getColumnIndex("Name");
+                int textIndex = cursor1.getColumnIndex("Text");
+                do{
+                    ContentValues cv = new ContentValues();
+                    cv.put("id_song",cursor1.getInt(idIndex));
+                    cv.put("NameLower",cursor1.getString(nameIndex).toLowerCase());
+                    cv.put("TextLower",cursor1.getString(textIndex).toLowerCase());
+                    dbLocal.insert("LowerSong", null, cv);
+                }while (cursor1.moveToNext());
+            }
+        }
     }
 }

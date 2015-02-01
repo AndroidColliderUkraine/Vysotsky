@@ -2,8 +2,11 @@ package com.androidcollider.vysotsky.database;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -41,10 +44,6 @@ public class DBupdater {
     private final static String[] tableNames = new String[]{"Song","Comment"};
 
     private long commentUpdCount = 0;
-
-    /*private int alreadyUpdRatings = 0;
-    private int needToUpdRatings = 0;*/
-
 
     public DBupdater(Context context, String mode) {
         this.context = context;
@@ -116,10 +115,10 @@ public class DBupdater {
         };
 
         // Adding request to request queue
-        /*strReq.setRetryPolicy(new DefaultRetryPolicy(
+        strReq.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(strReq, "update_ratings");
     }
@@ -183,10 +182,10 @@ public class DBupdater {
             }
         };
         // Adding request to request queue
-        /*strReq.setRetryPolicy(new DefaultRetryPolicy(
+        strReq.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(strReq, "comments to server");
     }
@@ -213,6 +212,7 @@ public class DBupdater {
 
                         Log.i(TAG + " local updates", localUpdateDates.toString());
                         Log.i(TAG + " server updates", serverUpdateDates.toString());
+                        dataSource.copyDataToLowerCaseTable();
 
                         //calculating needToUpdTables Tables
                         int needToUpdTables = 0;
@@ -227,11 +227,6 @@ public class DBupdater {
                             if (mode.equals("start")) {
                                 ((SplashScreenActivity) context).setLoadingStatus("Обновление базы песен");
                             }
-                            /*for (int i = 0; i < tableNames.length; i++) {
-                                if (serverUpdateDates.get(i) > localUpdateDates.get(i)) {
-                                    getNewDataFromServerReq(i, localUpdateDates.get(i));
-                                }
-                            }*/
                             getNewDataFromServerReq(localUpdateDates);
 
                         }
@@ -258,10 +253,10 @@ public class DBupdater {
             }
         };
         // Adding request to request queue
-        /*strReq.setRetryPolicy(new DefaultRetryPolicy(
+        strReq.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(strReq, "last_updates");
 
@@ -275,25 +270,11 @@ public class DBupdater {
                 url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                //Log.d("RESPONSE number", "     " + AppController.getInstance().getRequestQueue().getSequenceNumber() + " ");
                 Log.d("RESPONSE tables", "     " + response);
                 try {
                     JSONObject res = new JSONObject(response);
-                    //if (res.getString("Status").equals("True")){
-
-                        JSONArray resultSong = res.getJSONObject("Song").getJSONArray("results");
-                        JSONArray resultComment = res.getJSONObject("Comment").getJSONArray("results");
-
-                        for (int i = 0; i < resultComment.length(); i++) {
-                            dataSource.putJsonObjectToLocalTable("Comment", resultComment.getJSONObject(i));
-                        }
-
-                        for (int i = 0; i < resultSong.length(); i++) {
-                            dataSource.putJsonObjectToLocalTable("Song", resultSong.getJSONObject(i));
-                        }
-                        setProgramChange();
-
-                    //}
+                    SavingDataTask savingDataTask = new SavingDataTask();
+                    savingDataTask.execute(new JSONObject(response));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -317,10 +298,10 @@ public class DBupdater {
             }
         };
         // Adding request to request queue
-        /*strReq.setRetryPolicy(new DefaultRetryPolicy(
+        strReq.setRetryPolicy(new DefaultRetryPolicy(
                 MY_SOCKET_TIMEOUT_MS,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         AppController.getInstance().addToRequestQueue(strReq, "data update");
     }
@@ -334,6 +315,74 @@ public class DBupdater {
         } else if (mode.equals("finish")) {
             ((SongListActivity) context).finish();
         }
+    }
+
+
+
+    class SavingDataTask extends AsyncTask<JSONObject, Integer, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (mode.equals("start")) {
+                ((SplashScreenActivity) context).setLoadingStatus("Обновление базы песен");
+                ((SplashScreenActivity)context).setProgressVisible(View.VISIBLE);
+            }
+        }
+
+        @Override
+        protected Void doInBackground(JSONObject... jsonObjects) {
+
+            try {
+                JSONObject res = jsonObjects[0];
+                //if (res.get            String("status").equals("True")){
+
+                JSONArray resultSong = res.getJSONObject("Song").getJSONArray("results");
+                JSONArray resultComment = res.getJSONObject("Comment").getJSONArray("results");
+
+
+                int totalLenght = resultSong.length()+resultComment.length();
+                double percent = totalLenght/100;
+                int currentPercent= 0;
+                for (int i = 0; i < resultComment.length(); i++) {
+                    dataSource.putJsonObjectToLocalTable("Comment", resultComment.getJSONObject(i));
+
+                    if (i>percent*(currentPercent+1)&&mode.equals("start")){
+                        Log.i(TAG,"     "+ currentPercent);
+                        publishProgress(currentPercent);
+                        currentPercent++;
+                    }
+
+                }
+
+                for (int i = 0; i < resultSong.length(); i++) {
+                    dataSource.putJsonObjectToLocalTable("Song", resultSong.getJSONObject(i));
+                    if ((i+resultComment.length())>percent*(currentPercent+1)&&mode.equals("start")){
+                        Log.i(TAG,"     "+  currentPercent);
+                        publishProgress(currentPercent);
+                        currentPercent++;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            ((SplashScreenActivity)context).setProgressLoading(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            setProgramChange();
+        }
+
+
     }
 
 }

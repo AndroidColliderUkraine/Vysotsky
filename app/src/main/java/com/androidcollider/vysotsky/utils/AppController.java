@@ -5,13 +5,12 @@ import android.text.TextUtils;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 
-import org.acra.*;
-import org.acra.annotation.*;
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
 import org.acra.sender.HttpSender;
 
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 
 public class AppController extends Application {
 
-    private static final String PROPERTY_ID = "UA-58437769-1";
+    private static final String PROPERTY_ID = "UA-58437769-2";
     public static final String TAG = "Андроідний Коллайдер";
     public static final String BASE_URL_KEY = "http://560671.acolider.web.hosting-test.net/VV/API/";
 

@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    tools:context="com.androidcollider.koljadnik.SubmitActivity">
+
+
+    <!--<Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/element_color"
+        android:background="@drawable/background_for_sort_types"
+        android:id="@+id/spinner_submit"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp" />-->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_for_sort_types"
+        android:id="@+id/tv_submit_type"
+        android:layout_alignParentTop="true"
+        android:text="Добавить песню"
+        android:textColor="@color/edit_text_white_color"
+        android:padding="10dp"
+        android:textSize="18dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:background="@drawable/background_for_edit_texts"
+        android:inputType="textMultiLine"
+        android:id="@+id/et_submit_field"
+        android:layout_below="@id/tv_submit_type"
+        android:hint="@string/pishit_sudi"
+        android:padding="10dp"
+        android:textColor="@color/text_color"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nadislaty_rozrobniku"
+        android:background="@drawable/background_for_sort_types"
+        android:padding="10dp"
+        android:id="@+id/b_submit"
+        android:textColor="@color/edit_text_white_color"
+        android:layout_above="@+id/tv_ac_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/edit_text_white_color"
+        android:text="@string/android_collider_company"
+        android:background="@color/action_bar_color"
+        android:gravity="center"
+        android:padding="5dp"
+        android:textSize="15dp"
+        android:id="@+id/tv_ac_bar" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lv_submit_types"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="3dp"
+        android:visibility="gone"
+        android:layout_below="@+id/tv_submit_type"
+        android:headerDividersEnabled="false"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="3dp" />
+</RelativeLayout>

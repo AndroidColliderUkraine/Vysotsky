@@ -1,38 +1,49 @@
 package com.androidcollider.vysotsky;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.androidcollider.vysotsky.adapters.SongAdapter;
+import com.androidcollider.vysotsky.adapters.SortTypeAdapter;
+import com.androidcollider.vysotsky.database.DBupdater;
 import com.androidcollider.vysotsky.database.DataSource;
 import com.androidcollider.vysotsky.objects.Song;
+import com.androidcollider.vysotsky.utils.AppController;
+import com.androidcollider.vysotsky.utils.InternetHelper;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
-public class SongListActivity extends Activity {
+public class SongListActivity extends ActionBarActivity {
 
     private final static String TAG = "Андроідний Коллайдер";
-
+    private final static int UPDATE_DATA_TIME = 1000*3600;
     private ListView lv_songs_list, lv_sort_types;
     private EditText et_search_song;
     private ArrayList<Song> songList;
@@ -42,17 +53,20 @@ public class SongListActivity extends Activity {
     private ImageView iv_search_sort;
     private String typeName;
     private boolean isShowingFavorite =false;
+    private int sortType = 0;
+    private Timer t;
+    private DBupdater dBupdater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+        sendDataToAnalytics();
+        registerReceiver(broadcastReceiver,new IntentFilter("update_songs_ui"));
 
-        drawerInit();
-
+        List<String> list = Arrays.asList(getResources().getStringArray(R.array.sort_array));
         sortTypeArrayList = new ArrayList<>();
-        sortTypeArrayList.add("За алфавітом");
-        sortTypeArrayList.add("За рейтингом");
+        sortTypeArrayList.addAll(list);
 
         dataSource = new DataSource(this);
         Intent intent = getIntent();
@@ -62,21 +76,26 @@ public class SongListActivity extends Activity {
         initListeners();
 
         songList = dataSource.getSongMainInfo();
-        for (Song song: songList){
-            Log.i("T", song.getName());
-        }
 
         songAdapter = new SongAdapter(this, songList);
+        if (sortType==0){
+            sortByName();
+        } else {
+            sortByRating();
+        }
 
         lv_songs_list.setAdapter(songAdapter);
-        sortByRating();
-        /*SortTypeAdapter sortTypeAdapter = new SortTypeAdapter(this, sortTypeArrayList);
-        lv_sort_types.setAdapter(sortTypeAdapter);*/
+        SortTypeAdapter sortTypeAdapter = new SortTypeAdapter(this, sortTypeArrayList);
+        lv_sort_types.setAdapter(sortTypeAdapter);
+
+        dBupdater = new DBupdater(this, "timer");
+        startTimerUpdating();
     }
 
     private void initFields(){
         lv_songs_list = (ListView)findViewById(R.id.lv_songs_list);
         et_search_song = (EditText)findViewById(R.id.et_search_song);
+        et_search_song.setPadding(10,0,10,0);
         lv_sort_types = (ListView)findViewById(R.id.lv_sort_types);
         iv_search_sort = (ImageView)findViewById(R.id.iv_search_sort);
     }
@@ -89,7 +108,7 @@ public class SongListActivity extends Activity {
                 addOnePointToListRating(idSong);
                 addOnePointToLocalDBRating(idSong);
 
-                songAdapter.halfUpdateData(songList);
+                //songAdapter.halfUpdateData(songList);
 
                 Intent intent = new Intent(SongListActivity.this,TextActivity.class);
                 intent.putExtra("Song", songAdapter.getItem(position));
@@ -104,12 +123,14 @@ public class SongListActivity extends Activity {
                 switch (position){
                     case 0:
                         sortByName();
+                        sortType=0;
                         showHideSortTypes(false);
                         Log.i(TAG,songList.toString());
                         break;
 
                     case 1:
                         sortByRating();
+                        sortType=0;
                         showHideSortTypes(false);
                         Log.i(TAG,songList.toString());
                         break;
@@ -123,10 +144,21 @@ public class SongListActivity extends Activity {
             }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                songAdapter.search(et_search_song.getText().toString());
+                songAdapter.searchNew(et_search_song.getText().toString(),isShowingFavorite);
             }
             @Override
             public void afterTextChanged(Editable s) {
+            }
+        });
+        et_search_song.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    hideKeyboard();
+
+                }
+                return false;
             }
         });
 
@@ -170,8 +202,7 @@ public class SongListActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (Build.VERSION.SDK_INT>10){
-            getActionBar().setBackgroundDrawable(getResources().getDrawable(R.color.action_bar_color));
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.color.action_bar_color));
         }
 
         MenuInflater menuInflater = getMenuInflater();
@@ -189,19 +220,21 @@ public class SongListActivity extends Activity {
         if (item.getItemId()==R.id.show_favorite){
             songAdapter.showFavorite();
             isShowingFavorite = true;
+            songAdapter.searchNew(et_search_song.getText().toString(), isShowingFavorite);
             if (Build.VERSION.SDK_INT > 10) {
                 invalidateOptionsMenu();
             }
         } else if (item.getItemId()==R.id.show_all){
             songAdapter.showAll();
             isShowingFavorite = false;
+            songAdapter.searchNew(et_search_song.getText().toString(), isShowingFavorite);
             if (Build.VERSION.SDK_INT > 10) {
                 invalidateOptionsMenu();
             }
         }
         if (item.getItemId()==R.id.add_song){
-            /*Intent intent = new Intent(this, SubmitActivity.class);
-            startActivity(intent);*/
+            Intent intent = new Intent(this, SubmitActivity.class);
+            startActivity(intent);
         }
         if(item.getItemId()==android.R.id.home){
             finish();
@@ -242,66 +275,88 @@ public class SongListActivity extends Activity {
 
     }
 
-    private void drawerInit(){
-        String[] sortTypes = getResources().getStringArray(R.array.sort_array);
-        Spinner sort_spinner = (Spinner)findViewById(R.id.sort_spinner);
-
-        sort_spinner.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, sortTypes));
-        /*sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case 0:
-                        sortByName();
-                        break;
-
-                    case 1:
-                        sortByRating();
-                        break;
-                }
-            }
-        });*/
-
-        final EditText et_search_song_drawer =(EditText)findViewById(R.id.et_search_song_drawer);
-        et_search_song_drawer.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                songAdapter.search(et_search_song_drawer.getText().toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
-        CheckBox cb_favorite = (CheckBox)findViewById(R.id.cb_favorite);
-        cb_favorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            }
-        });
-
-        /*String[] drawerItems = getResources().getStringArray(R.array.drawer_array);
-        ListView drawerList = (ListView) findViewById(R.id.left_drawer1);
-
-        // Set the adapter for the list view
-        drawerList.setAdapter(new ArrayAdapter<String>(this,
-                 R.layout.drawer_list_item, drawerItems));
-        // Set the list's click listener
-        drawerList.setOnItemClickListener(new DrawerItemClickListener());*/
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (InternetHelper.isConnectionEnabled(this)){
+            DBupdater dBupdater = new DBupdater(this,"finish");
+            dBupdater.checkAndUpdateTables();
+        } else {
+            finish();
+        }
+    }
+
+    private void startTimerUpdating() {
+        //Declare the timer
+        t = new Timer();
+        //Set the schedule function and rate
+        t.scheduleAtFixedRate(new TimerTask() {
+
+                                  @Override
+                                  public void run() {
+                                      dBupdater.checkAndUpdateTables();
+                                  }
+
+                              },
+                //Set how long before to start calling the TimerTask (in milliseconds)
+                UPDATE_DATA_TIME,
+                //Set the amount of time between each execution (in milliseconds)
+                UPDATE_DATA_TIME);
+    }
+
+    @Override
+    protected void onDestroy() {
+        t.cancel();
+        unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
+    }
+    private void sendDataToAnalytics(){
+        // Get tracker.
+        Tracker t = ((AppController) getApplication()).getTracker(
+                AppController.TrackerName.APP_TRACKER);
+
+        // Set screen name.
+        // Where path is a String representing the screen name.
+        t.setScreenName("SongTypeActivity");
+
+        // Send a screen view.
+        t.send(new HitBuilders.AppViewBuilder().build());
+    }
+
+    private void hideKeyboard() {
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    public void updateUI(){
         songList.clear();
         songList = dataSource.getSongMainInfo();
         songAdapter.updateData(songList);
+        if (sortType==0){
+            sortByName();
+        } else {
+            sortByRating();
+        }
+        songAdapter.searchNew(et_search_song.getText().toString(),isShowingFavorite);
     }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("update_songs_ui")){
+                Log.i(TAG,"update ui");
+                updateUI();
+            }
+
+        }
+    };
 }

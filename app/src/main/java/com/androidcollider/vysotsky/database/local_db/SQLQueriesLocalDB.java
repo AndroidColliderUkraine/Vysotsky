@@ -7,7 +7,7 @@ public class SQLQueriesLocalDB {
     //make a string SQL request for Song table
     public static final String create_song_table = "CREATE TABLE Song (" +
             "id_song          INTEGER PRIMARY KEY NOT NULL," +
-            "Name             INTEGER NOT NULL," +
+            "Name             TEXT NOT NULL," +
             "Text             TEXT NOT NULL," +
             "Chord            TEXT NOT NULL," +
             "Year             INTEGER NOT NULL," +
@@ -17,6 +17,12 @@ public class SQLQueriesLocalDB {
             "Rating           INTEGER NOT NULL," +
             "LocalRating      INTEGER NOT NULL," +
             "IsFavorite       INTEGER NOT NULL" +
+            ");";
+    //make a string SQL request for Song table
+    public static final String create_lower_song_table = "CREATE TABLE LowerSong (" +
+            "id_song          INTEGER PRIMARY KEY NOT NULL," +
+            "NameLower        TEXT NOT NULL," +
+            "TextLower        TEXT NOT NULL" +
             ");";
     //make a string SQL request for Comment table
     public static final String create_comment_table = "CREATE TABLE Comment (" +
@@ -35,10 +41,5 @@ public class SQLQueriesLocalDB {
             "UserName         TEXT NOT NULL," +
             "DatePosted       INTEGER NOT NULL" +
             ");";
-
-    //make a string SQL request for Dropping all tables from ver 1
-    public static final String drop_ver_table_song = "DROP TABLE Song";
-    public static final String drop_ver_table_comment = "DROP TABLE Comment;";
-
 
 }

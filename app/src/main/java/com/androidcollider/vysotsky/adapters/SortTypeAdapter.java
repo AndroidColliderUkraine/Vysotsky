@@ -19,7 +19,6 @@ public class SortTypeAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater lInflater;
     public ArrayList<String> sortTypesList;
-    //public ArrayList<Route> allRouteArrayList;
 
     public SortTypeAdapter(Context context, ArrayList<String> sortTypesList) {
         this.context = context;

@@ -2,7 +2,6 @@ package com.androidcollider.vysotsky.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,19 +37,54 @@ public class SongAdapter extends BaseAdapter {
         allSongList.addAll(this.songsList);
     }
 
-    //form an arraylist of objects Route for dynamic listview
-    public void search(String text) {
+    /*//form an arraylist of objects Route for dynamic listview
+    public void search(String text, boolean isFavorite) {
+        dataSource.openLocal();
         songsList.clear();
-        for (int i = 0; i < allSongList.size(); i++) {
-            String name = allSongList.get(i).getName().toLowerCase();
-            text = text.toLowerCase();
-            if ((name.contains(text))||dataSource.isTextContainsChars(allSongList.get(i).getId(),text)) {
-                songsList.add(allSongList.get(i));
+        if (isFavorite) {
+            for (int i = 0; i < allSongList.size(); i++) {
+                String name = allSongList.get(i).getName().toLowerCase();
+                text = text.toLowerCase();
+
+                if (((name.contains(text)) || dataSource.isTextContainsChars(allSongList.get(i).getId(), text)) && allSongList.get(i).isFavorite()) {
+                    songsList.add(allSongList.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < allSongList.size(); i++) {
+                String name = allSongList.get(i).getName().toLowerCase();
+                text = text.toLowerCase();
+                if ((name.contains(text)) || dataSource.isTextContainsChars(allSongList.get(i).getId(), text)) {
+                    songsList.add(allSongList.get(i));
+                }
+            }
+        }
+
+
+        dataSource.closeLocal();
+        notifyDataSetChanged();
+    }*/
+
+    //form an arraylist of objects Route for dynamic listview
+    public void searchNew(String text, boolean isFavorite) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        songsList.clear();
+        ids = dataSource.getSerachRawQuaryArrayList(text.toLowerCase());
+        if (isFavorite) {
+            for (int i = 0; i < allSongList.size(); i++) {
+                if (ids.contains(allSongList.get(i).getId()) && allSongList.get(i).isFavorite()) {
+                    songsList.add(allSongList.get(i));
+                }
+            }
+        } else {
+            for (int i = 0; i < allSongList.size(); i++) {
+                if (ids.contains(allSongList.get(i).getId())) {
+                    songsList.add(allSongList.get(i));
+                }
             }
         }
         notifyDataSetChanged();
     }
-
 
     public void showFavorite() {
         songsList.clear();
@@ -104,8 +138,8 @@ public class SongAdapter extends BaseAdapter {
 
             holder = new ViewHolder();
             holder.tv_name = (TextView) view.findViewById(R.id.tv_item_song_name);
-            holder.iv_rating= (ImageView) view.findViewById(R.id.iv_item_song_rating);
-            holder.iv_favorite= (ImageView) view.findViewById(R.id.iv_item_song_favorite);
+            holder.iv_rating = (ImageView) view.findViewById(R.id.iv_item_song_rating);
+            holder.iv_favorite = (ImageView) view.findViewById(R.id.iv_item_song_favorite);
             Typeface typeFace = Typeface.createFromAsset(context.getAssets(), "fonts/OpenSans-Light.ttf");
             holder.tv_name.setTypeface(typeFace);
             view.setTag(holder);
@@ -114,40 +148,45 @@ public class SongAdapter extends BaseAdapter {
         }
         Song song = getItem(position);
         holder.tv_name.setText(song.getName());
-        if (song.isFavorite()){
+        if (song.isFavorite()) {
             holder.iv_favorite.setImageDrawable(context.getResources().getDrawable(R.drawable.heart));
-        } else{
+        } else {
             holder.iv_favorite.setImageDrawable(context.getResources().getDrawable(R.drawable.heart_white));
         }
 
-        long ratingRange = Song.current_max_rating-Song.current_min_rating;
+        long ratingRange = Song.current_max_rating - Song.current_min_rating;
 
-        if (ratingRange==0){
+        if (ratingRange == 0) {
             holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_5));
-        } else if (ratingRange<5){
-            switch ((int)(Song.current_max_rating-song.getRating())){
-                case 0: holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_5));
+        } else if (ratingRange < 5) {
+            switch ((int) (Song.current_max_rating - song.getRating())) {
+                case 0:
+                    holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_5));
                     break;
-                case 1: holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_4));
+                case 1:
+                    holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_4));
                     break;
-                case 2: holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_3));
+                case 2:
+                    holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_3));
                     break;
-                case 3: holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_2));
+                case 3:
+                    holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_2));
                     break;
-                case 4: holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_1));
+                case 4:
+                    holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_1));
                     break;
                 default:
                     holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_5));
                     break;
             }
         } else {
-            double onePoint = ratingRange/5;
-            long relativeRating = song.getRating()-Song.current_min_rating;
-            double currentRating = relativeRating/onePoint;
+            double onePoint = ratingRange / 5;
+            long relativeRating = song.getRating() - Song.current_min_rating;
+            double currentRating = relativeRating / onePoint;
 
-            long curentRatingRound = Math.round(currentRating+0.5);
+            long curentRatingRound = Math.round(currentRating + 0.5);
 
-            switch ((int)curentRatingRound) {
+            switch ((int) curentRatingRound) {
                 case 1:
                     holder.iv_rating.setImageDrawable(context.getResources().getDrawable(R.drawable.rating_1));
                     break;
@@ -188,7 +227,7 @@ public class SongAdapter extends BaseAdapter {
         this.notifyDataSetChanged();
     }
 
-    public void halfUpdateData(ArrayList<Song> songsList) {
+    /*public void halfUpdateData(ArrayList<Song> songsList) {
 
         ArrayList<Song> songs = new ArrayList<>();
         songs.addAll(songsList);
@@ -197,7 +236,7 @@ public class SongAdapter extends BaseAdapter {
 
         this.songsList.addAll(songs);
         this.notifyDataSetChanged();
-    }
+    }*/
 
    /* public void updateRouteLists(ArrayList<Route> list){
         this.routeArrayList.clear();
@@ -205,4 +244,6 @@ public class SongAdapter extends BaseAdapter {
         this.allRouteArrayList.clear();
         this.allRouteArrayList.addAll(list);
     }*/
+
+
 }

@@ -10,9 +10,9 @@
     <string name="commentarii">Комментарии</string>
     <string name="comment_button">Добавить</string>
     <string name="name_hint">Ваше имя</string>
-    <string name="comment_hint">Оставьте, пожайлуйста, свой комментарий..</string>
-    <string name="nadislaty_rozrobniku">Надіслати Розробнику</string>
-    <string name="pishit_sudi">Пишіть сюди...</string>
+    <string name="comment_hint">Оставьте, пожалуйста, свой комментарий..</string>
+    <string name="nadislaty_rozrobniku">Написать Разработчику</string>
+    <string name="pishit_sudi">Пишите сюда...</string>
     <string name="favorite">Любимые</string>
     <string name="search">Поиск</string>
     <string name="sorting">Сортировка</string>
@@ -26,6 +26,7 @@
     <string name="title_activity_song_types">SongTypesActivity</string>
     <string name="title_activity_song_list">SongListActivity</string>
     <string name="title_activity_text">TextActivity</string>
+    <string name="wait_for_download_text">Пожалуйста, подождите...</string>
 
     <string name="crash_toast_text">Oooops, crash!</string>
 
