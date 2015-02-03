@@ -137,7 +137,7 @@ public class SongListActivity extends ActionBarActivity {
                 }
             }
         });
-
+//Привіт, Северине!
         et_search_song.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
