@@ -316,6 +316,50 @@ android:layout_height="match_parent" >
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/help_container">
+
+            <ImageView
+                android:id="@+id/iv_help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/help_green" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="@string/help_text"
+                android:textColor="@color/edit_text_white_color"
+                android:textSize="16dp"
+                android:id="@+id/tv_help"/>
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_below="@+id/tv_help"
+                android:textColor="@color/edit_text_white_color"
+                android:textSize="14sp"
+                android:text="@string/dont_show"
+                android:id="@+id/cb_help"/>
+
+        </RelativeLayout>
+
+
         <!--<CheckBox
             android:id="@+id/checkBox_html"
             android:layout_width="wrap_content"
@@ -525,6 +569,46 @@ android:layout_height="match_parent" >
             android:src="@drawable/full_screen"
             android:id="@+id/iv_2_screen" />
 
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/help_dr_container">
+
+        <ImageView
+            android:id="@+id/iv_dr_help"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/help_green" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/help_dr_text"
+            android:textColor="@color/edit_text_white_color"
+            android:textSize="16dp"
+            android:id="@+id/tv_dr_help"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@+id/tv_dr_help"
+            android:textColor="@color/edit_text_white_color"
+            android:textSize="14sp"
+            android:text="@string/dont_show"
+            android:id="@+id/cb_dr_help"/>
 
     </RelativeLayout>
 </LinearLayout>

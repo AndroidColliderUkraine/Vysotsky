@@ -25,9 +25,12 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +56,7 @@ public class TextActivity extends ActionBarActivity {
     private TextView tv_user_name, tv_date_posted, tv_comment_text, tv_scroll_speed, tv_acc_number;
     private WebView tv_song_text;
     private LayoutInflater lInflater;
+    private RelativeLayout help_container, help_dr_container;
     private EditText et_user_name, et_comment;
     private Button btn_comment;
     private DataSource dataSource;
@@ -86,6 +90,7 @@ public class TextActivity extends ActionBarActivity {
         this.sharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         textSize = sharedPreferences.getInt("fontSize", 14);
 
+        sPref = new SharedPref(this);
         drawerInit();
 
         Intent intent = getIntent();
@@ -94,7 +99,6 @@ public class TextActivity extends ActionBarActivity {
         song = dataSource.getSongAdvancedInfo(song);
         isFavorite = song.isFavorite();
         Log.i(TAG, song.toString());
-        sPref = new SharedPref(this);
         text = song.getText();
 
         checkViewButtons();
@@ -218,6 +222,25 @@ public class TextActivity extends ActionBarActivity {
 
         ll_song_comments = (LinearLayout) findViewById(R.id.ll_song_comments);
         //ll_song_comments.setDividerPadding(20);
+        CheckBox cb_help = (CheckBox)findViewById(R.id.cb_help);
+        help_container = (RelativeLayout)findViewById(R.id.help_container);
+        help_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                help_container.setVisibility(View.GONE);
+            }
+        });
+        cb_help.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    sPref.setShowHelp(false);
+                    help_container.setVisibility(View.GONE);
+                } else {
+                    sPref.setShowHelp(true);
+                }
+            }
+        });
 
 
         addAllComments();
@@ -544,6 +567,32 @@ public class TextActivity extends ActionBarActivity {
         });
 
 
+        CheckBox cb_dr_help = (CheckBox)findViewById(R.id.cb_dr_help);
+        help_dr_container = (RelativeLayout)findViewById(R.id.help_dr_container);
+        help_dr_container.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                help_dr_container.setVisibility(View.GONE);
+            }
+        });
+
+        if (!sPref.getShowHelpDr()) {
+            findViewById(R.id.help_dr_container).setVisibility(View.GONE);
+        }
+
+        cb_dr_help.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    sPref.setShowHelpDr(false);
+                    help_dr_container.setVisibility(View.GONE);
+                } else {
+                    sPref.setShowHelpDr(true);
+                }
+            }
+        });
+
+
         mDrawerToggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar,
                 R.string.app_name, // nav drawer open - description for accessibility
@@ -587,6 +636,7 @@ public class TextActivity extends ActionBarActivity {
                 } else {
                     tv_2_acc.setText(String.valueOf(accordNumber));
                 }
+                help_container.setVisibility(View.GONE);
             }
 
             @Override
@@ -631,6 +681,10 @@ public class TextActivity extends ActionBarActivity {
 
         if (!sPref.getShowScreen()) {
             findViewById(R.id.iv_full_screen).setVisibility(View.GONE);
+        }
+
+        if (!sPref.getShowHelp()) {
+            findViewById(R.id.help_container).setVisibility(View.GONE);
         }
     }
 

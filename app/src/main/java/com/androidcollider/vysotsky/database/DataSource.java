@@ -45,20 +45,25 @@ public class DataSource {
 
     //Open database
     public void openLocal() throws SQLException {
-        dbLocal = dbHelperLocal.getWritableDatabase();
+
+        if (dbLocal == null || !dbLocal.isOpen()) {
+            dbLocal = dbHelperLocal.getWritableDatabase();
+        }
     }
 
     //Close database
     public void closeLocal() {
-        dbLocal.close();
+        if (dbLocal != null && dbLocal.isOpen()) {
+            dbLocal.close();
+        }
     }
 
 
     public void putJsonObjectToLocalTable(String tableName, JSONObject jsonObject) {
-
+        openLocal();
         long updateTime = 0;
         if (tableName.equals("Song")) {
-            openLocal();
+
             try {
                 int idSongServer = jsonObject.getInt("id");
                 String name = jsonObject.getString("Name");
@@ -110,7 +115,7 @@ public class DataSource {
             }
 
         } else if (tableName.equals("Comment")) {
-            openLocal();
+
             //Add data to table Comment
             try {
                 int idCommentServer = jsonObject.getInt("id");

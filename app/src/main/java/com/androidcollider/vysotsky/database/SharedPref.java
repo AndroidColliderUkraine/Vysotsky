@@ -71,6 +71,12 @@ public class SharedPref {
     public void setShowScreen(boolean isShow){
         sharedPreferences.edit().putBoolean("showScreen",isShow).apply();
     }
+    public void setShowHelp(boolean isShow){
+        sharedPreferences.edit().putBoolean("showHelp",isShow).apply();
+    }
+    public void setShowHelpDr(boolean isShow){
+        sharedPreferences.edit().putBoolean("showHelpDr",isShow).apply();
+    }
 
     public boolean getShowFonts(){
         return sharedPreferences.getBoolean("showFonts", true);
@@ -83,6 +89,12 @@ public class SharedPref {
     }
     public boolean getShowScreen(){
         return sharedPreferences.getBoolean("showScreen", true);
+    }
+    public boolean getShowHelp(){
+        return sharedPreferences.getBoolean("showHelp", true);
+    }
+    public boolean getShowHelpDr(){
+        return sharedPreferences.getBoolean("showHelpDr", true);
     }
 
 }

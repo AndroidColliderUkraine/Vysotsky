@@ -115,9 +115,9 @@ public class SubmitActivity extends ActionBarActivity {
                 MAILS);
         // Зачем
         emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                tv_submit_type.getText().toString());
+                 "Высоцкий");
         // О чём
-        emailIntent.putExtra(Intent.EXTRA_TEXT,
+        emailIntent.putExtra(Intent.EXTRA_TEXT,tv_submit_type.getText().toString()+getString(R.string.double_enter)+
                 et_submit.getText().toString());
         // С чем
         /*emailIntent.putExtra(

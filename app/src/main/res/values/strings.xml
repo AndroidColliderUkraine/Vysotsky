@@ -27,10 +27,15 @@
     <string name="title_activity_song_list">SongListActivity</string>
     <string name="title_activity_text">TextActivity</string>
     <string name="wait_for_download_text">Пожалуйста, подождите...</string>
+    <string name="help_text">Воспользуетесь меню</string>
+    <string name="help_dr_text">Убрать с главного экрана</string>
+    <string name="dont_show">Больше не показывать</string>
 
     <string name="crash_toast_text">Oooops, crash!</string>
 
     <string name="succesfull_comm_add_message">Комментарий добавлен</string>
+
+    <string name="double_enter">\n\n</string>
 
 
 

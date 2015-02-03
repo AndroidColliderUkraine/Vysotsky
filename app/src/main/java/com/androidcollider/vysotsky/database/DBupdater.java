@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class DBupdater {
 
-    private final static int MY_SOCKET_TIMEOUT_MS = 30000;
+    private final static int MY_SOCKET_TIMEOUT_MS = 60000;
     private final static String TAG = "Андроідний Коллайдер";
     private String mode = "";
 
